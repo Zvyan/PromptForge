@@ -1,28 +1,31 @@
 meta:
-  name: "function_calling"
-  display_name: "函数调用定义"
-  category: "tool_use"
-  description: "设计与描述大模型 Function Calling 参数"
-  tags: ["agents", "tools", "function-calling"]
-  version: "1.0.0"
-  platforms: ["openai", "claude", "gemini"]
-
+  name: function_calling
+  display_name: 函数调用定义
+  category: tool_use
+  description: 设计与描述大模型 Function Calling 参数
+  tags:
+  - agents
+  - tools
+  - function-calling
+  version: 1.0.0
+  platforms:
+  - openai
+  - claude
+  - gemini
 variables:
   api_description:
     type: string
     required: true
-    description: "外部API或工具的功能描述"
+    description: 外部API或工具的功能描述
   functions:
     type: list
     required: true
-    description: "需要抽象的函数列表"
+    description: 需要抽象的函数列表
   language:
     type: string
     required: true
-    default: "JSON Schema"
-    description: "输出的 Schema 语言 (如 JSON Schema, TypeScript 接口)"
-
-
+    default: JSON Schema
+    description: 输出的 Schema 语言 (如 JSON Schema, TypeScript 接口)
 presets:
 - id: flight_ticket_tools
   title: 民航机票查询与预订 Function Calling 契约
@@ -32,29 +35,74 @@ presets:
     functions: search_flights(origin, destination, departure_date, return_date, cabin_class),
       reserve_ticket(flight_no, passenger_info)
     language: python
-
 sections:
   system:
-    role: |
-      你是一位 AI Agent 架构师，擅长将业务 API 转化为大语言模型易于理解和准确调用的 Function Calling / Tool 定义。
-    instructions: |
-      分析提供的 API 描述，设计出高质量的工具函数声明。
+    role: '你是一位 AI Agent 架构师，擅长将业务 API 转化为大语言模型易于理解和准确调用的 Function Calling / Tool
+      定义。
+
+      '
+    instructions: '分析提供的 API 描述，设计出高质量的工具函数声明。
+
       输出格式必须符合 {{ language }} 规范。
-      
+
+
       需要设计的函数包括：
+
       {% for func in functions %}
+
       - {{ func }}
+
       {% endfor %}
-    output_format: |
-      提供每个函数的完整定义，包含：
+
+      '
+    output_format: '提供每个函数的完整定义，包含：
+
       - name: 函数名（使用合适的命名规范）
+
       - description: 详尽的描述，明确告诉 LLM 何时使用该工具
-      - parameters: 参数的 Schema 定义，包含详细的参数描述 (description)、类型 (type)、是否必填 (required) 等。
-    constraints: |
-      - 描述 (description) 必须极其清晰，这是模型决策的唯一依据。
+
+      - parameters: 参数的 Schema 定义，包含详细的参数描述 (description)、类型 (type)、是否必填 (required)
+      等。
+
+      '
+    constraints: '- 描述 (description) 必须极其清晰，这是模型决策的唯一依据。
+
       - 参数类型必须准确无误。
-  user: |
-    业务 API 功能描述：
+
+      '
+  user: '业务 API 功能描述：
+
     {{ api_description }}
-    
+
+
     请输出相应的 Function / Tool 定义。
+
+    '
+sections_en:
+  system:
+    role: You are an AI Agent Architect specializing in converting enterprise APIs
+      into precision Function Calling / Tool schemas for LLMs.
+    instructions: 'Convert the provided API specifications into strict function call
+      definitions formatted for {{ platform }}.
+
+      Provide corresponding handler execution stubs in {{ language }}.'
+    output_format: '1. Tool Schema (JSON Schema format compatible with OpenAI/Claude/Gemini)
+
+      2. Dispatcher / Execution Handler Code
+
+      3. Few-shot Calling Examples'
+    constraints: '- Every parameter must have a clear description and explicit type.
+
+      - Avoid ambiguous enum fields.'
+  user: 'Target AI Platform: {{ platform }}
+
+    Language: {{ language }}
+
+
+    API Function Definition:
+
+    ```
+
+    {{ api_definition }}
+
+    ```'

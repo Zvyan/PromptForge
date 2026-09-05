@@ -18,7 +18,7 @@
 
 <div class="template-list-section">
     <div class="list-meta-bar">
-        <span>共包含 <strong>{{ templates|length }}</strong> 个精选模板</span>
+        <span data-i18n-total="{{ templates|length }}">共包含 <strong>{{ templates|length }}</strong> 个精选模板</span>
     </div>
 
     <div class="template-cards-grid">
@@ -31,7 +31,7 @@
             <p class="tmpl-desc">{{ tmpl.description }}</p>
             
             <div class="tmpl-platforms">
-                <span class="platform-label">适配平台:</span>
+                <span class="platform-label" data-i18n="platform_label">适配平台:</span>
                 {% for p in tmpl.platforms %}
                 <span class="badge badge-{{ p }}">{{ p }}</span>
                 {% endfor %}
@@ -45,13 +45,13 @@
 
             {% if tmpl.presets_count and tmpl.presets_count > 0 %}
             <div class="tmpl-presets-preview">
-                <span class="preset-badge-tag">💡 内置 {{ tmpl.presets_count }} 组实战预设</span>
+                <span class="preset-badge-tag" data-preset-badge="{{ tmpl.presets_count }}">💡 内置 {{ tmpl.presets_count }} 组实战预设</span>
                 <span class="preset-titles-text">{{ tmpl.preset_titles|join(' · ') }}</span>
             </div>
             {% endif %}
 
             <div class="tmpl-footer">
-                <a href="/template/{{ category.name }}/{{ tmpl.name }}" class="btn btn-primary btn-block">使用该模板 →</a>
+                <a href="/template/{{ category.name }}/{{ tmpl.name }}" class="btn btn-primary btn-block" data-i18n="btn_use_tmpl">使用该模板 →</a>
             </div>
         </div>
         {% endfor %}

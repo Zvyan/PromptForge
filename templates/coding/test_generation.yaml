@@ -1,32 +1,38 @@
 meta:
-  name: "test_generation"
-  display_name: "测试生成"
-  category: "coding"
-  description: "自动生成单元测试与边界测试"
-  tags: ["testing", "qa"]
-  version: "1.0.0"
-  platforms: ["openai", "claude", "gemini", "cursor"]
-
+  name: test_generation
+  display_name: 测试生成
+  category: coding
+  description: 自动生成单元测试与边界测试
+  tags:
+  - testing
+  - qa
+  version: 1.0.0
+  platforms:
+  - openai
+  - claude
+  - gemini
+  - cursor
 variables:
   language:
     type: string
     required: true
-    description: "编程语言"
+    description: 编程语言
   test_framework:
     type: string
     required: true
-    description: "测试框架"
+    description: 测试框架
   coverage_target:
     type: enum
     required: true
-    options: ["basic", "standard", "exhaustive"]
-    description: "覆盖率目标"
+    options:
+    - basic
+    - standard
+    - exhaustive
+    description: 覆盖率目标
   code_content:
     type: string
     required: true
-    description: "需要测试的代码"
-
-
+    description: 需要测试的代码
 presets:
 - id: simple_calculator_unit_test
   title: 简易计算器加减乘除函数单元测试
@@ -63,30 +69,88 @@ presets:
       time.Time mu sync.Mutex }
 
       func (b *TokenBucket) Allow(n int64) bool { ... }'
-
 sections:
   system:
-    role: |
-      你是一位严谨的 {{ language }} 测试工程师，精通 {{ test_framework }} 框架，致力于保障软件质量。
-    instructions: |
-      为提供的代码编写高质量的测试用例。
-      
-      {% if coverage_target == 'basic' %}
+    role: '你是一位严谨的 {{ language }} 测试工程师，精通 {{ test_framework }} 框架，致力于保障软件质量。
+
+      '
+    instructions: '为提供的代码编写高质量的测试用例。
+
+
+      {% if coverage_target == ''basic'' %}
+
       只需提供正常路径(Happy Path)的测试。
-      {% elif coverage_target == 'standard' %}
+
+      {% elif coverage_target == ''standard'' %}
+
       提供正常路径、常见的边界条件和错误处理测试。
-      {% elif coverage_target == 'exhaustive' %}
+
+      {% elif coverage_target == ''exhaustive'' %}
+
       提供极尽详尽的测试，包括所有分支覆盖、极端边界条件、异常抛出、并发安全(如适用)及 Mock 外部依赖。
+
       {% endif %}
-    output_format: |
-      1. 测试策略说明 (涵盖了哪些场景)。
+
+      '
+    output_format: '1. 测试策略说明 (涵盖了哪些场景)。
+
       2. 完整的 {{ test_framework }} 测试代码。
-    constraints: |
-      - 遵循 AAA (Arrange, Act, Assert) 模式组织测试代码。
+
+      '
+    constraints: '- 遵循 AAA (Arrange, Act, Assert) 模式组织测试代码。
+
       - 测试方法命名应具有描述性，清楚说明测试场景和预期结果。
-  user: |
-    请为以下 {{ language }} 代码生成 {{ test_framework }} 测试用例，目标覆盖率：{{ coverage_target }}。
-    
+
+      '
+  user: '请为以下 {{ language }} 代码生成 {{ test_framework }} 测试用例，目标覆盖率：{{ coverage_target
+    }}。
+
+
     ```{{ language }}
+
     {{ code_content }}
+
     ```
+
+    '
+sections_en:
+  system:
+    role: You are a meticulous {{ language }} QA / Test Automation engineer specializing
+      in the {{ test_framework }} testing framework.
+    instructions: 'Write comprehensive automated test suites for the provided code.
+
+      {% if coverage_target == "basic" %}
+
+      Cover standard happy paths and smoke test scenarios.
+
+      {% elif coverage_target == "edge_cases" %}
+
+      Focus thoroughly on boundary conditions, invalid inputs, edge cases, and error
+      branches.
+
+      {% else %}
+
+      Deliver exhaustive test coverage including happy paths, edge cases, stress boundaries,
+      and mocks/stubs.
+
+      {% endif %}'
+    output_format: '1. Test Strategy Overview
+
+      2. Complete Test Code (runnable with {{ test_framework }})
+
+      3. Mocking & Fixture Setup Instructions'
+    constraints: '- Tests must be deterministic, isolated, and self-contained.
+
+      - Provide clear descriptive test names following BDD (Given-When-Then) conventions.'
+  user: 'Testing Framework: {{ test_framework }}
+
+    Coverage Target: {{ coverage_target }}
+
+
+    Code to Test:
+
+    ```{{ language }}
+
+    {{ code_content }}
+
+    ```'

@@ -4,20 +4,20 @@
 
 {% block content %}
 <section class="hero-section">
-    <div class="hero-badge">✨ 多平台 Agent 规范提示词引擎</div>
-    <h1 class="hero-title">为 AI Agent 量身打造的<br><span class="gradient-text">精准结构化提示词</span></h1>
-    <p class="hero-desc">内置六大类工程级提示词模板，支持 OpenAI / Codex、Claude、Gemini、Cursor、Windsurf 与 ZCode。分类清晰、参数动态校验、一键无缝接入。</p>
+    <div class="hero-badge" data-i18n="hero_badge">✨ 多平台 Agent 规范提示词引擎</div>
+    <h1 class="hero-title" data-i18n="hero_title">为 AI Agent 量身打造的<br><span class="gradient-text">精准结构化提示词</span></h1>
+    <p class="hero-desc" data-i18n="hero_desc">内置 9 大类工程级专业提示词模板，支持 OpenAI / Codex、Claude、Gemini、Cursor、Windsurf、ZCode 与 DeepSeek Harness。分类清晰、参数动态校验、一键无缝接入。</p>
     
     <div class="hero-actions">
-        <a href="/templates/coding" class="btn btn-primary btn-lg">浏览开发类模板</a>
-        <a href="#categories" class="btn btn-outline btn-lg">查看所有分类</a>
+        <a href="/templates/coding" class="btn btn-primary btn-lg" data-i18n="btn_browse_coding">浏览开发类模板</a>
+        <a href="#categories" class="btn btn-outline btn-lg" data-i18n="btn_view_all_cat">查看所有分类</a>
     </div>
 </section>
 
 <section id="categories" class="categories-section">
     <div class="section-header">
-        <h2 class="section-title">模板分类目录</h2>
-        <p class="section-subtitle">按功能与工程场景精细划分，提供清晰的职责与边界</p>
+        <h2 class="section-title" data-i18n="sec_cat_title">模板分类目录</h2>
+        <p class="section-subtitle" data-i18n="sec_cat_desc">按功能与工程场景精细划分，提供清晰的职责与边界</p>
     </div>
 
     <div class="category-grid">
@@ -26,10 +26,10 @@
             <div class="card-icon">{{ cat.icon }}</div>
             <div class="card-body">
                 <div class="card-title-row">
-                    <h3 class="card-title">{{ cat.display_name }}</h3>
-                    <span class="count-badge">{{ cat.template_count }} 个模板</span>
+                    <h3 class="card-title" data-cat-title="{{ cat.name }}">{{ cat.display_name }}</h3>
+                    <span class="count-badge" data-cat-count="{{ cat.template_count }}">{{ cat.template_count }} 个模板</span>
                 </div>
-                <p class="card-desc">{{ cat.description }}</p>
+                <p class="card-desc" data-cat-desc="{{ cat.name }}">{{ cat.description }}</p>
                 <div class="card-tags">
                     {% for sub in cat.subcategories %}
                     <span class="sub-tag">{{ sub }}</span>
@@ -44,35 +44,35 @@
 
 <section id="quickstart" class="quickstart-section">
     <div class="section-header">
-        <h2 class="section-title">快速上手 (Codex & 终端)</h2>
-        <p class="section-subtitle">在 Codex 命令行或本地终端直接使用 CLI 生成与导出</p>
+        <h2 class="section-title" data-i18n="sec_quick_title">快速上手 (Codex & 终端)</h2>
+        <p class="section-subtitle" data-i18n="sec_quick_desc">在 Codex 命令行或本地终端直接使用 CLI 生成与导出</p>
     </div>
 
     <div class="code-cards-grid">
         <div class="code-card">
             <div class="code-card-header">
-                <span>1. 列出所有模板分类</span>
+                <span data-i18n="step_1">1. 列出所有模板分类</span>
             </div>
             <pre><code>promptforge list</code></pre>
         </div>
 
         <div class="code-card">
             <div class="code-card-header">
-                <span>2. 交互式生成并选择平台</span>
+                <span data-i18n="step_2">2. 交互式生成并选择平台</span>
             </div>
             <pre><code>promptforge generate -c coding -t code_review -p codex -i</code></pre>
         </div>
 
         <div class="code-card">
             <div class="code-card-header">
-                <span>3. 导出为 .zcoderules 规则文件</span>
+                <span data-i18n="step_3">3. 导出为 .zcoderules 规则文件</span>
             </div>
             <pre><code>promptforge export -c coding -t bug_fix -p zcode -o .zcoderules</code></pre>
         </div>
 
         <div class="code-card">
             <div class="code-card-header">
-                <span>4. 启动本地可视化 Web UI</span>
+                <span data-i18n="step_4">4. 启动本地可视化 Web UI</span>
             </div>
             <pre><code>promptforge web --port 8000</code></pre>
         </div>

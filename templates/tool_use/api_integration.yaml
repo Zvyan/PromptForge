@@ -1,28 +1,37 @@
 meta:
-  name: "api_integration"
-  display_name: "API 集成"
-  category: "tool_use"
-  description: "第三方 API 集成与客户端封装"
-  tags: ["api", "integration", "client"]
-  version: "1.0.0"
-  platforms: ["openai", "claude", "gemini", "cursor"]
-
+  name: api_integration
+  display_name: API 集成
+  category: tool_use
+  description: 第三方 API 集成与客户端封装
+  tags:
+  - api
+  - integration
+  - client
+  version: 1.0.0
+  platforms:
+  - openai
+  - claude
+  - gemini
+  - cursor
 variables:
   api_name:
     type: string
     required: true
-    description: "第三方 API 名称"
+    description: 第三方 API 名称
   auth_type:
     type: enum
     required: true
-    options: ["Bearer Token", "API Key", "OAuth2", "Basic", "None"]
-    description: "认证方式"
+    options:
+    - Bearer Token
+    - API Key
+    - OAuth2
+    - Basic
+    - None
+    description: 认证方式
   endpoints:
     type: list
     required: true
-    description: "需要对接的端点列表"
-
-
+    description: 需要对接的端点列表
 presets:
 - id: stripe_checkout_integration
   title: Stripe 国际化订阅收银台 API 接入
@@ -31,27 +40,69 @@ presets:
     api_name: Stripe Billing API v2024
     auth_type: Bearer Token
     endpoints: POST /v1/checkout/sessions (创建结账会话), GET /v1/subscriptions/{id} (查询订阅)
-
 sections:
   system:
-    role: |
-      你是一位擅长构建高可用网络服务的后端开发工程师。
-    instructions: |
-      为你需要集成的第三方服务 "{{ api_name }}" 编写一个高质量的客户端 SDK / 封装类。
-      
+    role: '你是一位擅长构建高可用网络服务的后端开发工程师。
+
+      '
+    instructions: '为你需要集成的第三方服务 "{{ api_name }}" 编写一个高质量的客户端 SDK / 封装类。
+
+
       认证方式采用：{{ auth_type }}。
-      
+
+
       需要实现以下端点/功能的对接：
+
       {% for ep in endpoints %}
+
       - {{ ep }}
+
       {% endfor %}
-    output_format: |
-      1. 客户端类 (Client Class) 的定义，包含认证初始化。
+
+      '
+    output_format: '1. 客户端类 (Client Class) 的定义，包含认证初始化。
+
       2. 各个 Endpoint 对应的方法实现。
+
       3. 自定义异常类设计 (针对 HTTP 错误或业务错误)。
+
       4. 使用示例。
-    constraints: |
-      - 代码必须包含重试逻辑、超时设置等健壮性考量。
+
+      '
+    constraints: '- 代码必须包含重试逻辑、超时设置等健壮性考量。
+
       - 良好的类型提示和响应反序列化。
-  user: |
-    请为我实现 "{{ api_name }}" 的 API 集成代码。
+
+      '
+  user: '请为我实现 "{{ api_name }}" 的 API 集成代码。
+
+    '
+sections_en:
+  system:
+    role: You are a senior backend integration engineer specializing in third-party
+      API connectivity and resilient SDK wrappers.
+    instructions: 'Write a robust, production-grade client SDK wrapper for the external
+      API "{{ api_name }}".
+
+      Ensure rate limiting, automatic exponential backoff retries, and comprehensive
+      error handling.'
+    output_format: '1. Client Architecture & Authentication Setup
+
+      2. Complete Client Implementation Class
+
+      3. Usage Example & Error Handling Snippet'
+    constraints: '- Strongly typed request and response entities.
+
+      - Safe resource management and deterministic timeout configurations.'
+  user: 'Target API Name: {{ api_name }}
+
+    Programming Language: {{ language }}
+
+
+    API Specification / Endpoints:
+
+    ```
+
+    {{ endpoints_spec }}
+
+    ```'

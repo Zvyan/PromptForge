@@ -28,6 +28,19 @@ const I18N_DICT = {
         cat_productivity: '✨ 办公效率',
         cat_academic: '🎓 学术科研',
         cat_presentation: '📽️ 演示汇报',
+        hero_badge: '✨ 多平台 Agent 规范提示词引擎',
+        hero_title: '为 AI Agent 量身打造的<br><span class="gradient-text">精准结构化提示词</span>',
+        hero_desc: '内置 9 大类工程级专业提示词模板，支持 OpenAI / Codex、Claude、Gemini、Cursor、Windsurf、ZCode 与 DeepSeek Harness。分类清晰、参数动态校验、一键无缝接入。',
+        btn_browse_coding: '浏览开发类模板',
+        btn_view_all_cat: '查看所有分类',
+        sec_cat_title: '模板分类目录',
+        sec_cat_desc: '按功能与工程场景精细划分，提供清晰的职责与边界',
+        sec_quick_title: '快速上手 (Codex & 终端)',
+        sec_quick_desc: '在 Codex 命令行或本地终端直接使用 CLI 生成与导出',
+        step_1: '1. 列出所有模板分类',
+        step_2: '2. 交互式生成并选择平台',
+        step_3: '3. 导出为 .zcoderules 规则文件',
+        step_4: '4. 启动本地可视化 Web UI',
         params_config: '⚙️ 提示词参数与配置',
         presets_title: '实战需求预设 (1-Click Presets)',
         presets_hint: '点击卡片一键自动装配全部参数与代码',
@@ -40,6 +53,8 @@ const I18N_DICT = {
         tab_json: 'JSON 报文',
         btn_copy: '📋 复制',
         btn_download: '💾 导出文件',
+        platform_label: '适配平台:',
+        btn_use_tmpl: '使用该模板 →',
         lang_toggle_label: 'English'
     },
     en: {
@@ -54,7 +69,20 @@ const I18N_DICT = {
         cat_productivity: '✨ Productivity',
         cat_academic: '🎓 Academic & Research',
         cat_presentation: '📽️ Presentations',
-        params_config: '⚙️ Parameters & Config',
+        hero_badge: '✨ Enterprise-Grade Prompt Engineering for AI Agents',
+        hero_title: 'Precision Structured Prompts<br><span class="gradient-text">Engineered for Modern Agents</span>',
+        hero_desc: '56 production-grade templates across 9 domains with 118 ready presets. Native support for OpenAI/Codex, Claude, Gemini, Cursor, Windsurf, ZCode & DeepSeek Harness.',
+        btn_browse_coding: 'Browse Coding Templates',
+        btn_view_all_cat: 'Explore All Categories',
+        sec_cat_title: 'Template Directory',
+        sec_cat_desc: 'Categorized by engineering workflows and scenarios with clear boundaries',
+        sec_quick_title: 'Quick Start (Codex & CLI)',
+        sec_quick_desc: 'Generate and export prompts directly in your terminal using PromptForge CLI',
+        step_1: '1. List all template categories',
+        step_2: '2. Interactive generation with platform selection',
+        step_3: '3. Export to .zcoderules rules file',
+        step_4: '4. Start local Web UI workspace',
+        params_config: '⚙️ Parameters & Configuration',
         presets_title: '1-Click Ready Presets',
         presets_hint: 'Click any card to auto-populate all parameters and code',
         target_platform: 'Target Platform',
@@ -66,7 +94,57 @@ const I18N_DICT = {
         tab_json: 'JSON Payload',
         btn_copy: '📋 Copy',
         btn_download: '💾 Download Config',
+        platform_label: 'Platforms:',
+        btn_use_tmpl: 'Use Template →',
         lang_toggle_label: '中文'
+    }
+};
+
+const CAT_I18N = {
+    coding: {
+        title_zh: '💻 编程开发', title_en: '💻 Coding',
+        desc_zh: '系统开发、代码审查、Debug 排查、架构重构与测试生成',
+        desc_en: 'System development, code review, bug fixes, refactoring and test generation'
+    },
+    analysis: {
+        title_zh: '📊 数据分析', title_en: '📊 Data Analysis',
+        desc_zh: '数据挖掘、代码复杂度、安全漏洞审计、根因排查与性能调优',
+        desc_en: 'Data analytics, code complexity, security audits, root cause analysis and profiling'
+    },
+    writing: {
+        title_zh: '📝 写作', title_en: '📝 Technical Writing',
+        desc_zh: 'API 契约、技术规范、产品 PRD、架构决策与项目 README',
+        desc_en: 'API contracts, tech specs, PRD specs, architecture decision records & READMEs'
+    },
+    tool_use: {
+        title_zh: '🛠️ 工具调用', title_en: '🛠️ Tool & Agent',
+        desc_zh: 'Function Calling 契约、MCP Server 插件、三方 API 与多 Agent 协同',
+        desc_en: 'Function calling schemas, MCP server plugins, 3rd-party APIs & multi-agent orchestration'
+    },
+    conversation: {
+        title_zh: '💬 对话控制', title_en: '💬 Conversation',
+        desc_zh: '多轮上下文引导、模拟技术面试、Plan 规划先导与小黄鸭调试',
+        desc_en: 'Multi-turn context steering, mock interviews, plan-first modes and rubber-duck debugging'
+    },
+    system: {
+        title_zh: '⚙️ 系统指令', title_en: '⚙️ System Rules',
+        desc_zh: 'Agent 角色设定、严格安全准则、零信任安全护栏与结构化校验',
+        desc_en: 'Agent persona definitions, zero-trust guardrails, safety rules & schema enforcers'
+    },
+    productivity: {
+        title_zh: '✨ 办公效率', title_en: '✨ Productivity',
+        desc_zh: '会议纪要提炼、职场周报总结、自媒体小红书文案与出行攻略',
+        desc_en: 'Meeting minutes, weekly reports, social media copywriting & travel itineraries'
+    },
+    academic: {
+        title_zh: '🎓 学术科研', title_en: '🎓 Academic & Research',
+        desc_zh: '文献速读综述、开题立项、论文润色、消融实验与答辩模拟',
+        desc_en: 'Literature reviews, thesis proposals, paper polishing, ablation tests & defense drills'
+    },
+    presentation: {
+        title_zh: '📽️ 演示汇报', title_en: '📽️ Presentations',
+        desc_zh: 'PPT 叙事架构、逐页内容排版、商业路演 Deck 与 Marp 代码生成',
+        desc_en: 'Slide outlines, layout design, pitch decks and Marp markdown code generation'
     }
 };
 
@@ -88,17 +166,57 @@ function initUiLang() {
                 enRadio.checked = true;
                 enRadio.dispatchEvent(new Event('change'));
             }
+        } else {
+            const zhRadio = document.querySelector('input[name="lang"][value="zh"]');
+            if (zhRadio) {
+                zhRadio.checked = true;
+                zhRadio.dispatchEvent(new Event('change'));
+            }
         }
     });
 }
 
 function applyUiLang(lang) {
     const dict = I18N_DICT[lang] || I18N_DICT.zh;
+    const isEn = (lang === 'en');
+
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (dict[key]) {
-            el.textContent = dict[key];
+            if (dict[key].includes('<')) {
+                el.innerHTML = dict[key];
+            } else {
+                el.textContent = dict[key];
+            }
         }
+    });
+
+    // 翻译分类卡片与描述
+    document.querySelectorAll('[data-cat-title]').forEach(el => {
+        const catKey = el.getAttribute('data-cat-title');
+        if (CAT_I18N[catKey]) {
+            el.textContent = isEn ? CAT_I18N[catKey].title_en : CAT_I18N[catKey].title_zh;
+        }
+    });
+    document.querySelectorAll('[data-cat-desc]').forEach(el => {
+        const catKey = el.getAttribute('data-cat-desc');
+        if (CAT_I18N[catKey]) {
+            el.textContent = isEn ? CAT_I18N[catKey].desc_en : CAT_I18N[catKey].desc_zh;
+        }
+    });
+
+    // 数量标签
+    document.querySelectorAll('[data-cat-count]').forEach(el => {
+        const cnt = el.getAttribute('data-cat-count');
+        el.textContent = isEn ? `${cnt} templates` : `${cnt} 个模板`;
+    });
+    document.querySelectorAll('[data-i18n-total]').forEach(el => {
+        const total = el.getAttribute('data-i18n-total');
+        el.innerHTML = isEn ? `Total <strong>${total}</strong> curated templates` : `共包含 <strong>${total}</strong> 个精选模板`;
+    });
+    document.querySelectorAll('[data-preset-badge]').forEach(el => {
+        const count = el.getAttribute('data-preset-badge');
+        el.textContent = isEn ? `💡 ${count} Built-in Presets` : `💡 内置 ${count} 组实战预设`;
     });
 
     const langText = document.getElementById('uiLangText');

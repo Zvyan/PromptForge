@@ -1,36 +1,40 @@
 meta:
-  name: "readme_gen"
-  display_name: "README 生成"
-  category: "writing"
-  description: "生成优秀的开源项目 README"
-  tags: ["readme", "github", "open-source"]
-  version: "1.0.0"
-  platforms: ["openai", "claude", "gemini", "markdown"]
-
+  name: readme_gen
+  display_name: README 生成
+  category: writing
+  description: 生成优秀的开源项目 README
+  tags:
+  - readme
+  - github
+  - open-source
+  version: 1.0.0
+  platforms:
+  - openai
+  - claude
+  - gemini
+  - markdown
 variables:
   project_name:
     type: string
     required: true
-    description: "项目名称"
+    description: 项目名称
   language:
     type: string
     required: true
-    description: "主要开发语言/技术栈"
+    description: 主要开发语言/技术栈
   features:
     type: list
     required: true
-    description: "核心特性列表"
+    description: 核心特性列表
   license:
     type: string
     required: false
-    default: "MIT"
-    description: "开源协议"
+    default: MIT
+    description: 开源协议
   project_description:
     type: string
     required: true
-    description: "项目简介"
-
-
+    description: 项目简介
 presets:
 - id: beginner_github_project_readme
   title: 个人实用小工具 GitHub 极简 README
@@ -58,33 +62,79 @@ presets:
     - 零依赖单二进制启动
     license: Apache-2.0
     project_description: 新一代模块化大模型智能体执行底座，为开发者提供高可控性、安全沙箱与开箱即用的工作流编排能力。
-
 sections:
   system:
-    role: |
-      你是一个热爱开源的资深开发者，非常擅长包装和推广开源项目。
-    instructions: |
-      为项目 "{{ project_name }}" 生成一份极具吸引力的 GitHub/GitLab README.md 文件。
-      
+    role: '你是一个热爱开源的资深开发者，非常擅长包装和推广开源项目。
+
+      '
+    instructions: '为项目 "{{ project_name }}" 生成一份极具吸引力的 GitHub/GitLab README.md 文件。
+
+
       该项目基于 {{ language }} 开发。
+
       包含以下核心特性：
+
       {% for feature in features %}
+
       - {{ feature }}
+
       {% endfor %}
-    output_format: |
-      请包含以下部分：
+
+      '
+    output_format: '请包含以下部分：
+
       1. 项目标题与徽章 (Badges，如构建状态、License等)。
+
       2. 项目简介 (简明扼要地说明解决了什么问题)。
+
       3. 核心特性 (Features)。
+
       4. 快速开始 (Quick Start，包含安装和基本使用)。
+
       5. 项目结构 (可选)。
+
       6. 贡献指南 (Contributing)。
+
       7. 许可证 (License: {{ license }})。
-    constraints: |
-      - 排版美观，合理使用 Emoji 提升阅读体验。
+
+      '
+    constraints: '- 排版美观，合理使用 Emoji 提升阅读体验。
+
       - Markdown 语法标准，兼容 GitHub Flavored Markdown。
-  user: |
-    项目信息：
+
+      '
+  user: '项目信息：
+
     名称: {{ project_name }}
+
     简介: {{ project_description }}
+
     请生成完整的 README.md 内容。
+
+    '
+sections_en:
+  system:
+    role: You are a seasoned open-source developer and project maintainer with an
+      eye for crafting compelling GitHub/GitLab READMEs.
+    instructions: 'Generate a polished, production-grade README.md for the project
+      "{{ project_name }}".
+
+      Highlight key selling points, badges, architecture, and step-by-step installation.'
+    output_format: '1. Project Title, Badges, and One-Line Pitch
+
+      2. Features & Architecture Overview
+
+      3. Quick Start (Prerequisites, Installation, Usage)
+
+      4. Configuration, Roadmap & License'
+    constraints: '- Clean GitHub Flavored Markdown layout with tables and callout
+      alerts.
+
+      - Engaging and developer-friendly tone.'
+  user: 'Project Name: {{ project_name }}
+
+    Tech Stack: {{ tech_stack }}
+
+    Feature Highlights: {{ key_features }}
+
+    Target Audience: {{ target_audience }}'

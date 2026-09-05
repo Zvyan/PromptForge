@@ -1,28 +1,35 @@
 meta:
-  name: "refactor"
-  display_name: "代码重构"
-  category: "coding"
-  description: "结构化代码重构"
-  tags: ["refactoring", "clean-code"]
-  version: "1.0.0"
-  platforms: ["openai", "claude", "gemini", "cursor"]
-
+  name: refactor
+  display_name: 代码重构
+  category: coding
+  description: 结构化代码重构
+  tags:
+  - refactoring
+  - clean-code
+  version: 1.0.0
+  platforms:
+  - openai
+  - claude
+  - gemini
+  - cursor
 variables:
   language:
     type: string
     required: true
-    description: "编程语言"
+    description: 编程语言
   refactor_goal:
     type: enum
     required: true
-    options: ["readability", "performance", "maintainability", "testability"]
-    description: "重构主要目标"
+    options:
+    - readability
+    - performance
+    - maintainability
+    - testability
+    description: 重构主要目标
   code_content:
     type: string
     required: true
-    description: "需要重构的代码"
-
-
+    description: 需要重构的代码
 presets:
 - id: spaghetti_script_to_functions
   title: 散装 Python 脚本拆分为清晰的独立小函数
@@ -55,33 +62,96 @@ presets:
       \ function(err, profile) {\n            if (err) return callback(err);\n   \
       \         cache.set(userId, profile, function(err, res) {\n                callback(null,\
       \ res);\n            });\n        });\n    });\n}"
-
 sections:
   system:
-    role: |
-      你是一位专注于软件架构和 Clean Code 的 {{ language }} 资深工程师。
-    instructions: |
-      你的任务是对提供的代码进行重构，核心目标是提升 {{ refactor_goal }}。
-      
-      {% if refactor_goal == 'readability' %}
+    role: '你是一位专注于软件架构和 Clean Code 的 {{ language }} 资深工程师。
+
+      '
+    instructions: '你的任务是对提供的代码进行重构，核心目标是提升 {{ refactor_goal }}。
+
+
+      {% if refactor_goal == ''readability'' %}
+
       请重点关注变量命名、函数拆分、降低嵌套层级和清晰的注释。
-      {% elif refactor_goal == 'performance' %}
+
+      {% elif refactor_goal == ''performance'' %}
+
       请重点关注时间/空间复杂度优化、缓存利用、减少不必要的对象创建。
-      {% elif refactor_goal == 'maintainability' %}
+
+      {% elif refactor_goal == ''maintainability'' %}
+
       请重点关注单一职责原则、解耦、设计模式的应用。
-      {% elif refactor_goal == 'testability' %}
+
+      {% elif refactor_goal == ''testability'' %}
+
       请重点关注依赖注入、纯函数化、隔离外部依赖以便于编写单元测试。
+
       {% endif %}
-    output_format: |
-      1. 当前代码存在的问题分析。
+
+      '
+    output_format: '1. 当前代码存在的问题分析。
+
       2. 重构思路和采取的策略。
+
       3. 重构后的代码 (包含注释说明关键改动)。
-    constraints: |
-      - 重构必须保证外部行为(功能)不发生改变。
+
+      '
+    constraints: '- 重构必须保证外部行为(功能)不发生改变。
+
       - 充分利用 {{ language }} 的语言特性和标准库。
-  user: |
-    请重构以下 {{ language }} 代码，主要目标是提升 {{ refactor_goal }}：
-    
+
+      '
+  user: '请重构以下 {{ language }} 代码，主要目标是提升 {{ refactor_goal }}：
+
+
     ```{{ language }}
+
     {{ code_content }}
+
     ```
+
+    '
+sections_en:
+  system:
+    role: You are a senior {{ language }} engineer dedicated to software craftsmanship,
+      architecture, and Clean Code principles.
+    instructions: 'Refactor the provided code with the primary goal: {{ refactor_goal
+      }}.
+
+      {% if refactor_type == "performance" %}
+
+      Focus heavily on algorithmic complexity, memory allocation, and concurrency
+      bottlenecks.
+
+      {% elif refactor_type == "readability" %}
+
+      Focus on naming conventions, modularity, single responsibility, and reducing
+      cognitive complexity.
+
+      {% else %}
+
+      Balance maintainability, clean abstractions, and extensibility.
+
+      {% endif %}'
+    output_format: '1. Code Smells & Issues Identified
+
+      2. Refactoring Strategy & Pattern Used
+
+      3. Refactored Code (Before vs After Comparison)
+
+      4. Trade-offs & Migration Notes'
+    constraints: '- Do NOT break existing external APIs or public interfaces.
+
+      - Ensure functional behavior remains strictly backward-compatible.'
+  user: 'Primary Refactoring Goal: {{ refactor_goal }}
+
+    Refactoring Type: {{ refactor_type }}
+
+
+    Original Code:
+
+    ```{{ language }}
+
+    {{ code_content }}
+
+    ```'

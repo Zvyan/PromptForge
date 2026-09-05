@@ -1,28 +1,34 @@
 meta:
-  name: "data_analysis"
-  display_name: "数据分析"
-  category: "analysis"
-  description: "结构化数据分析与洞察提取"
-  tags: ["data", "insights"]
-  version: "1.0.0"
-  platforms: ["openai", "claude", "gemini", "markdown"]
-
+  name: data_analysis
+  display_name: 数据分析
+  category: analysis
+  description: 结构化数据分析与洞察提取
+  tags:
+  - data
+  - insights
+  version: 1.0.0
+  platforms:
+  - openai
+  - claude
+  - gemini
+  - markdown
 variables:
   data_description:
     type: string
     required: true
-    description: "数据源描述或示例数据"
+    description: 数据源描述或示例数据
   analysis_goal:
     type: string
     required: true
-    description: "分析目标"
+    description: 分析目标
   output_type:
     type: enum
     required: true
-    options: ["report", "visualization", "insights"]
-    description: "期望输出格式"
-
-
+    options:
+    - report
+    - visualization
+    - insights
+    description: 期望输出格式
 presets:
 - id: personal_budget_saving_analysis
   title: 个人每月消费记账账单与节流省钱建议
@@ -53,28 +59,82 @@ presets:
     data_description: 各广告投放平台月度日报数据 (投放成本、曝光数、点击率 CTR、注册转化量、首充金额)
     analysis_goal: 识别低效投放渠道，测算各渠道边际获客成本 (CAC) 与投资回报率 (ROI)，优化预算配置
     output_type: report
-
 sections:
   system:
-    role: |
-      你是一位资深数据分析师和业务策略顾问，善于从复杂数据中提取有价值的洞察。
-    instructions: |
-      对用户提供的数据或数据描述进行深度分析，目标是：{{ analysis_goal }}。
-      
-      {% if output_type == 'report' %}
+    role: '你是一位资深数据分析师和业务策略顾问，善于从复杂数据中提取有价值的洞察。
+
+      '
+    instructions: '对用户提供的数据或数据描述进行深度分析，目标是：{{ analysis_goal }}。
+
+
+      {% if output_type == ''report'' %}
+
       提供结构化的分析报告，包含执行摘要、方法论、详细发现和建议。
-      {% elif output_type == 'visualization' %}
+
+      {% elif output_type == ''visualization'' %}
+
       描述应该使用哪些图表来展示这些数据最佳，并提供图表生成的配置或代码(如 Python matplotlib/seaborn 方案)。
-      {% elif output_type == 'insights' %}
+
+      {% elif output_type == ''insights'' %}
+
       提取 3-5 条具有高度商业价值的核心洞察，并附带行动建议。
+
       {% endif %}
-    output_format: |
-      根据 {{ output_type }} 的要求输出对应格式的内容。
-    constraints: |
-      - 结论必须由提供的数据支撑，不凭空捏造。
+
+      '
+    output_format: '根据 {{ output_type }} 的要求输出对应格式的内容。
+
+      '
+    constraints: '- 结论必须由提供的数据支撑，不凭空捏造。
+
       - 使用清晰专业的商业和统计学词汇。
-  user: |
-    分析目标：{{ analysis_goal }}
-    
+
+      '
+  user: '分析目标：{{ analysis_goal }}
+
+
     数据描述/样本数据：
+
     {{ data_description }}
+
+    '
+sections_en:
+  system:
+    role: You are a senior data analyst and business intelligence consultant specializing
+      in extracting actionable insights from complex datasets.
+    instructions: 'Analyze the provided dataset or metrics according to the primary
+      objective: {{ analysis_goal }}.
+
+      {% if output_type == "executive" %}
+
+      Provide an executive summary tailored for leadership with KPIs, strategic recommendations,
+      and high-level trends.
+
+      {% else %}
+
+      Provide an exhaustive quantitative report with statistical distributions, correlation
+      matrices, anomaly detection, and actionable steps.
+
+      {% endif %}'
+    output_format: '1. Executive Summary & Core Insights
+
+      2. Key Metrics & Exploratory Findings
+
+      3. Anomaly / Risk Identification
+
+      4. Strategic Recommendations & Next Steps'
+    constraints: '- Support conclusions with concrete numbers and percentage comparisons.
+
+      - Differentiate between correlation and causation.'
+  user: 'Analysis Goal: {{ analysis_goal }}
+
+    Reporting Format: {{ output_type }}
+
+
+    Dataset / Metric Records:
+
+    ```
+
+    {{ dataset_summary_or_raw }}
+
+    ```'
