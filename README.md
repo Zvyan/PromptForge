@@ -1,5 +1,9 @@
 # PromptForge — 多平台 Agent 规范提示词生成框架
 
+<p align="center">
+  <a href="README_EN.md">English</a> | <b>中文</b>
+</p>
+
 PromptForge 是一个专为各类 AI Agent 平台量身打造的结构化提示词生成与管理框架，提供分类清晰、可复用、动态类型校验的模板系统，并支持通过 CLI、Web UI 与 OpenAI Codex 终端直接调用。
 
 ---
