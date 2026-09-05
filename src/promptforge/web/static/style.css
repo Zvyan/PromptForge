@@ -140,6 +140,26 @@ body.theme-light .top-nav { background: rgba(255, 255, 255, 0.7); }
 }
 .theme-btn:hover { color: var(--text-primary); }
 
+.lang-btn {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    border-radius: 9999px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-sans);
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+.lang-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--border-prominent);
+    background: var(--bg-hover);
+}
+
 /* 全局水平标签栏 */
 .category-tabs-container {
     position: fixed;

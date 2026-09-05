@@ -24,7 +24,7 @@
         <!-- 左侧：参数与选项配置表单 -->
         <div class="form-panel">
             <div class="panel-header">
-                <h3>⚙️ 提示词参数与配置</h3>
+                <h3 data-i18n="params_config">⚙️ 提示词参数与配置</h3>
             </div>
             
             <form id="generateForm" class="generate-form">
@@ -37,9 +37,9 @@
                     <div class="presets-header">
                         <div class="presets-title-wrap">
                             <span class="presets-icon">💡</span>
-                            <span class="presets-title">实战需求预设 (1-Click Presets)</span>
+                            <span class="presets-title" data-i18n="presets_title">实战需求预设 (1-Click Presets)</span>
                         </div>
-                        <span class="presets-hint">点击卡片一键自动装配全部参数与代码</span>
+                        <span class="presets-hint" data-i18n="presets_hint">点击卡片一键自动装配全部参数与代码</span>
                     </div>
                     
                     <div class="presets-cards-grid">
@@ -69,7 +69,7 @@
 
                 <!-- 目标平台与输出语言 -->
                 <div class="form-group">
-                    <label class="form-label">目标平台 (Platform)</label>
+                    <label class="form-label" data-i18n="target_platform">目标平台 (Platform)</label>
                     <div class="platform-radios">
                         {% for p in platforms %}
                         <label class="radio-chip">
@@ -81,7 +81,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">输出语言 (Language)</label>
+                    <label class="form-label" data-i18n="output_language">输出语言 (Language)</label>
                     <div class="lang-selector">
                         <label class="radio-chip">
                             <input type="radio" name="lang" value="zh" checked>
@@ -96,7 +96,7 @@
 
                 <hr class="form-divider">
 
-                <h4 class="form-section-subtitle">动态模板变量输入</h4>
+                <h4 class="form-section-subtitle" data-i18n="dynamic_vars">动态模板变量输入</h4>
 
                 <!-- 动态变量渲染 -->
                 {% for var_name, var_def in template.variables.items() %}
@@ -240,7 +240,7 @@
                 {% endfor %}
 
                 <button type="submit" id="btnSubmit" class="btn btn-primary btn-block btn-lg">
-                    <span>✨ 立即生成规范提示词</span>
+                    <span data-i18n="btn_generate">✨ 立即生成规范提示词</span>
                 </button>
             </form>
         </div>
@@ -249,14 +249,14 @@
         <div class="preview-panel">
             <div class="panel-header preview-header">
                 <div class="tab-group">
-                    <button class="tab-btn active" data-tab="formatted">平台格式化输出</button>
-                    <button class="tab-btn" data-tab="raw">纯文本 (Raw)</button>
-                    <button class="tab-btn" data-tab="json">JSON 报文</button>
+                    <button class="tab-btn active" data-tab="formatted" data-i18n="tab_formatted">平台格式化输出</button>
+                    <button class="tab-btn" data-tab="raw" data-i18n="tab_raw">纯文本 (Raw)</button>
+                    <button class="tab-btn" data-tab="json" data-i18n="tab_json">JSON 报文</button>
                 </div>
 
                 <div class="preview-actions">
-                    <button id="btnCopy" class="btn btn-secondary btn-sm" title="复制到剪贴板">📋 复制</button>
-                    <button id="btnDownload" class="btn btn-secondary btn-sm" title="保存至本地">💾 导出文件</button>
+                    <button id="btnCopy" class="btn btn-secondary btn-sm" title="复制到剪贴板" data-i18n="btn_copy">📋 复制</button>
+                    <button id="btnDownload" class="btn btn-secondary btn-sm" title="保存至本地" data-i18n="btn_download">💾 导出文件</button>
                 </div>
             </div>
 

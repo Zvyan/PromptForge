@@ -5,6 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    initUiLang();
     initTabs();
     initPresets();
     initQuickChips();
@@ -12,6 +13,99 @@ document.addEventListener('DOMContentLoaded', () => {
     initCopyAndDownload();
     checkUrlPreset();
 });
+
+// 国际化双语字典 (i18n)
+const I18N_DICT = {
+    zh: {
+        cli_guide: 'CLI 指南',
+        cat_overview: '概览',
+        cat_coding: '💻 编程开发',
+        cat_analysis: '📊 数据分析',
+        cat_writing: '📝 写作',
+        cat_tool_use: '🛠️ 工具调用',
+        cat_conversation: '💬 对话控制',
+        cat_system: '⚙️ 系统指令',
+        cat_productivity: '✨ 办公效率',
+        cat_academic: '🎓 学术科研',
+        cat_presentation: '📽️ 演示汇报',
+        params_config: '⚙️ 提示词参数与配置',
+        presets_title: '实战需求预设 (1-Click Presets)',
+        presets_hint: '点击卡片一键自动装配全部参数与代码',
+        target_platform: '目标平台 (Platform)',
+        output_language: '输出语言 (Language)',
+        dynamic_vars: '动态模板变量输入',
+        btn_generate: '✨ 立即生成规范提示词',
+        tab_formatted: '平台格式化输出',
+        tab_raw: '纯文本 (Raw)',
+        tab_json: 'JSON 报文',
+        btn_copy: '📋 复制',
+        btn_download: '💾 导出文件',
+        lang_toggle_label: 'English'
+    },
+    en: {
+        cli_guide: 'CLI Guide',
+        cat_overview: 'Overview',
+        cat_coding: '💻 Coding',
+        cat_analysis: '📊 Data Analysis',
+        cat_writing: '📝 Technical Writing',
+        cat_tool_use: '🛠️ Tool & Agent',
+        cat_conversation: '💬 Conversation',
+        cat_system: '⚙️ System Rules',
+        cat_productivity: '✨ Productivity',
+        cat_academic: '🎓 Academic & Research',
+        cat_presentation: '📽️ Presentations',
+        params_config: '⚙️ Parameters & Config',
+        presets_title: '1-Click Ready Presets',
+        presets_hint: 'Click any card to auto-populate all parameters and code',
+        target_platform: 'Target Platform',
+        output_language: 'Output Language',
+        dynamic_vars: 'Template Variable Inputs',
+        btn_generate: '✨ Generate Structured Prompt',
+        tab_formatted: 'Platform Export',
+        tab_raw: 'Raw Markdown',
+        tab_json: 'JSON Payload',
+        btn_copy: '📋 Copy',
+        btn_download: '💾 Download Config',
+        lang_toggle_label: '中文'
+    }
+};
+
+function initUiLang() {
+    const toggleBtn = document.getElementById('uiLangToggle');
+    if (!toggleBtn) return;
+
+    let currentLang = localStorage.getItem('pf_ui_lang') || 'zh';
+    applyUiLang(currentLang);
+
+    toggleBtn.addEventListener('click', () => {
+        currentLang = currentLang === 'zh' ? 'en' : 'zh';
+        localStorage.setItem('pf_ui_lang', currentLang);
+        applyUiLang(currentLang);
+        
+        if (currentLang === 'en') {
+            const enRadio = document.querySelector('input[name="lang"][value="en"]');
+            if (enRadio) {
+                enRadio.checked = true;
+                enRadio.dispatchEvent(new Event('change'));
+            }
+        }
+    });
+}
+
+function applyUiLang(lang) {
+    const dict = I18N_DICT[lang] || I18N_DICT.zh;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+            el.textContent = dict[key];
+        }
+    });
+
+    const langText = document.getElementById('uiLangText');
+    if (langText) {
+        langText.textContent = dict.lang_toggle_label;
+    }
+}
 
 // 0. 预设场景一键填充
 function initPresets() {
