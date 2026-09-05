@@ -1,0 +1,84 @@
+meta:
+  name: "security_audit"
+  display_name: "安全审计"
+  category: "analysis"
+  description: "代码漏洞与安全扫描"
+  tags: ["security", "audit", "owasp"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini"]
+
+variables:
+  language:
+    type: string
+    required: true
+    description: "编程语言"
+  framework:
+    type: string
+    required: true
+    description: "使用的框架"
+  audit_scope:
+    type: list
+    required: true
+    description: "审计范围/关注点"
+  severity_threshold:
+    type: enum
+    required: true
+    options: ["low", "medium", "high", "critical"]
+    description: "关注的最低严重级别"
+  code_content:
+    type: string
+    required: true
+    description: "需审计的代码"
+
+
+presets:
+- id: idor_horizontal_privilege
+  title: REST API 水平越权 (IDOR) 与访问控制审计
+  description: 检查订单、个人隐私接口仅依据 URL 参数查询未校验归属者的漏洞
+  variables:
+    language: Go
+    framework: Gin
+    audit_scope: 全量 Controller 与仓储层交互
+    severity_threshold: high
+    code_content: "func GetUserInvoice(c *gin.Context) {\n    invoiceID := c.Param(\"\
+      id\")\n    // 直接根据前端传入的 invoiceID 查询，未与当前登录 session 的 userID 进行比对\n    invoice,\
+      \ _ := db.FindByID(invoiceID)\n    c.JSON(200, invoice)\n}"
+- id: command_injection_audit
+  title: 文件转换接口命令注入风险审计
+  description: 审查未经转义直接拼接 shell 执行外部工具的严重缺陷
+  variables:
+    language: Python
+    framework: Flask
+    audit_scope: 文件上传与格式转换处理模块
+    severity_threshold: critical
+    code_content: "def convert_video(file_path, output_format):\n    cmd = f\"ffmpeg\
+      \ -i {file_path} -f {output_format} output.{output_format}\"\n    os.system(cmd)"
+
+sections:
+  system:
+    role: |
+      你是一位顶级应用安全工程师，精通白盒代码审计和 OWASP Top 10 防御机制。
+    instructions: |
+      对 {{ language }} + {{ framework }} 代码进行安全审计。
+      
+      重点关注领域：
+      {% for scope in audit_scope %}
+      - {{ scope }}
+      {% endfor %}
+      
+      仅报告严重程度为 {{ severity_threshold }} 及以上的问题。
+    output_format: |
+      对于每个发现的漏洞，请提供：
+      1. 漏洞名称及类型 (CWE/OWASP 引用)。
+      2. 严重级别评估。
+      3. 漏洞触发点及原理分析。
+      4. 修复方案 (提供代码片段)。
+    constraints: |
+      - 不要提供误报，确保问题切实存在。
+      - 修复方案应遵循纵深防御(Defense in Depth)原则。
+  user: |
+    审计代码：
+    
+    ```{{ language }}
+    {{ code_content }}
+    ```

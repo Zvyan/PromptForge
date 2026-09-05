@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}PromptForge - {{ template.meta.display_name }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="breadcrumb-sep">/</span>
+<a href="/templates/{{ category.name }}">{{ category.display_name }}</a>
+<span class="breadcrumb-sep">/</span>
+<span class="breadcrumb-current">{{ template.meta.display_name }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-header">
+        <div class="detail-title-group">
+            <h1 class="detail-title">{{ template.meta.display_name }}</h1>
+            <span class="detail-badge"><code>{{ template.meta.category }}/{{ template.meta.name }}</code></span>
+            <span class="detail-ver">v{{ template.meta.version }}</span>
+        </div>
+        <p class="detail-desc">{{ template.meta.description }}</p>
+    </div>
+
+    <div class="detail-grid">
+        <!-- 左侧：参数与选项配置表单 -->
+        <div class="form-panel">
+            <div class="panel-header">
+                <h3>⚙️ 提示词参数与配置</h3>
+            </div>
+            
+            <form id="generateForm" class="generate-form">
+                <input type="hidden" id="categoryName" value="{{ template.meta.category }}">
+                <input type="hidden" id="templateName" value="{{ template.meta.name }}">
+
+                <!-- 💡 顶部高亮实战需求预设 (Presets) -->
+                {% if template.presets and template.presets|length > 0 %}
+                <div class="presets-banner">
+                    <div class="presets-header">
+                        <div class="presets-title-wrap">
+                            <span class="presets-icon">💡</span>
+                            <span class="presets-title">实战需求预设 (1-Click Presets)</span>
+                        </div>
+                        <span class="presets-hint">点击卡片一键自动装配全部参数与代码</span>
+                    </div>
+                    
+                    <div class="presets-cards-grid">
+                        {% for preset in template.presets %}
+                        <button type="button" class="btn-preset-card" 
+                                data-preset-id="{{ preset.id }}"
+                                data-preset='{{ preset.variables | tojson }}'
+                                data-title="{{ preset.title }}">
+                            <div class="preset-card-head">
+                                <span class="preset-dot">⚡</span>
+                                <strong class="preset-card-title">{{ preset.title }}</strong>
+                            </div>
+                            {% if preset.description %}
+                            <p class="preset-card-desc">{{ preset.description }}</p>
+                            {% endif %}
+                        </button>
+                        {% endfor %}
+                    </div>
+
+                    <div id="presetNotice" class="preset-applied-notice" style="display: none;">
+                        <span class="notice-icon">✓</span>
+                        <span>已装载预设：<strong id="presetNoticeTitle"></strong></span>
+                    </div>
+                </div>
+                <hr class="form-divider">
+                {% endif %}
+
+                <!-- 目标平台与输出语言 -->
+                <div class="form-group">
+                    <label class="form-label">目标平台 (Platform)</label>
+                    <div class="platform-radios">
+                        {% for p in platforms %}
+                        <label class="radio-chip">
+                            <input type="radio" name="platform" value="{{ p }}" {% if loop.first %}checked{% endif %}>
+                            <span class="chip-label">{{ p }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">输出语言 (Language)</label>
+                    <div class="lang-selector">
+                        <label class="radio-chip">
+                            <input type="radio" name="lang" value="zh" checked>
+                            <span class="chip-label">🇨🇳 中文 (Chinese)</span>
+                        </label>
+                        <label class="radio-chip">
+                            <input type="radio" name="lang" value="en">
+                            <span class="chip-label">🇬🇧 English</span>
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="form-divider">
+
+                <h4 class="form-section-subtitle">动态模板变量输入</h4>
+
+                <!-- 动态变量渲染 -->
+                {% for var_name, var_def in template.variables.items() %}
+                <div class="form-group" data-var-container="{{ var_name }}">
+                    <div class="form-label-row">
+                        <label class="form-label" for="var_{{ var_name }}">
+                            {{ var_def.description or var_name }}
+                            {% if var_def.required %}
+                            <span class="required-star">*</span>
+                            {% endif %}
+                        </label>
+                    </div>
+
+                    <!-- 编程语言专属选择控制 -->
+                    {% if var_name == "language" or var_name == "programming_language" %}
+                    <div class="quick-options-bar">
+                        <span class="quick-label">快速选择语言:</span>
+                        <div class="quick-chips">
+                            {% for lang_opt in ["Python", "TypeScript", "Go", "Java", "C++", "Rust", "SQL", "JavaScript", "C#", "Shell"] %}
+                            <button type="button" class="btn-quick-chip" data-target="var_{{ var_name }}" data-value="{{ lang_opt }}">{{ lang_opt }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <input type="text" list="lang_options_{{ var_name }}" id="var_{{ var_name }}" name="{{ var_name }}" class="form-control" data-type="string" value="{{ var_def.default or '' }}" placeholder="请从上方点选或输入编程语言 (如 Python / Go / Rust)" {% if var_def.required %}required{% endif %}>
+                    <datalist id="lang_options_{{ var_name }}">
+                        <option value="Python">
+                        <option value="TypeScript">
+                        <option value="Go">
+                        <option value="Java">
+                        <option value="C++">
+                        <option value="Rust">
+                        <option value="SQL">
+                        <option value="JavaScript">
+                        <option value="C#">
+                        <option value="PHP">
+                        <option value="Swift">
+                        <option value="Kotlin">
+                        <option value="Shell">
+                        <option value="Scala">
+                        <option value="Ruby">
+                        <option value="Dart">
+                    </datalist>
+
+                    <!-- 框架专属快速选项 -->
+                    {% elif var_name == "framework" %}
+                    <div class="quick-options-bar">
+                        <span class="quick-label">常用框架推荐:</span>
+                        <div class="quick-chips">
+                            {% for fw_opt in ["FastAPI", "Spring Boot", "Gin", "React", "Vue", "Next.js", "Django", "Express"] %}
+                            <button type="button" class="btn-quick-chip" data-target="var_{{ var_name }}" data-value="{{ fw_opt }}">{{ fw_opt }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <input type="text" list="fw_options_{{ var_name }}" id="var_{{ var_name }}" name="{{ var_name }}" class="form-control" data-type="string" value="{{ var_def.default or '' }}" placeholder="请从上方点选或输入框架名称" {% if var_def.required %}required{% endif %}>
+                    <datalist id="fw_options_{{ var_name }}">
+                        <option value="FastAPI">
+                        <option value="Spring Boot">
+                        <option value="Gin">
+                        <option value="React">
+                        <option value="Vue.js">
+                        <option value="Next.js">
+                        <option value="Django">
+                        <option value="Express">
+                        <option value="Flask">
+                        <option value="NestJS">
+                    </datalist>
+
+                    <!-- 数据库专属快速选项 -->
+                    {% elif var_name == "db_type" or var_name == "database" or var_name == "dialect" %}
+                    <div class="quick-options-bar">
+                        <span class="quick-label">常用数据库推荐:</span>
+                        <div class="quick-chips">
+                            {% for db_opt in ["MySQL", "PostgreSQL", "Redis", "MongoDB", "SQLite", "Oracle"] %}
+                            <button type="button" class="btn-quick-chip" data-target="var_{{ var_name }}" data-value="{{ db_opt|lower }}">{{ db_opt }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% if var_def.type.value == "enum" %}
+                    <select id="var_{{ var_name }}" name="{{ var_name }}" class="form-control" data-type="enum" {% if var_def.required %}required{% endif %}>
+                        {% for opt in var_def.options %}
+                        <option value="{{ opt }}" {% if var_def.default == opt %}selected{% endif %}>{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <input type="text" id="var_{{ var_name }}" name="{{ var_name }}" class="form-control" data-type="string" value="{{ var_def.default or '' }}" placeholder="请输入数据库或方言" {% if var_def.required %}required{% endif %}>
+                    {% endif %}
+
+                    <!-- 标准枚举类型 (Select 改造) -->
+                    {% elif var_def.type.value == "enum" %}
+                    <div class="quick-options-bar">
+                        <span class="quick-label">备选枚举值:</span>
+                        <div class="quick-chips">
+                            {% for opt in var_def.options %}
+                            <button type="button" class="btn-quick-chip" data-target="var_{{ var_name }}" data-value="{{ opt }}">{{ opt }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <select id="var_{{ var_name }}" name="{{ var_name }}" class="form-control" data-type="enum" {% if var_def.required %}required{% endif %}>
+                        {% for opt in var_def.options %}
+                        <option value="{{ opt }}" {% if var_def.default == opt %}selected{% endif %}>{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <!-- 布尔类型 -->
+                    {% elif var_def.type.value == "boolean" %}
+                    <label class="switch-toggle">
+                        <input type="checkbox" id="var_{{ var_name }}" name="{{ var_name }}" data-type="boolean" {% if var_def.default %}checked{% endif %}>
+                        <span class="toggle-track"></span>
+                        <span class="toggle-text">{{ var_def.description }}</span>
+                    </label>
+
+                    <!-- 代码或长文本大文本域 -->
+                    {% elif var_name == "code_content" or var_name == "context" or var_name == "sql_query" or var_name == "table_schema" or var_name == "diff_content" or var_name == "raw_text" or var_name == "schema_definition" or var_name == "endpoints" or var_name == "paper_abstract_or_text" or var_name == "presentation_draft" or var_name == "raw_content" or var_name == "problem_statement" or var_name == "meeting_raw_notes" %}
+                    <textarea id="var_{{ var_name }}" name="{{ var_name }}" class="form-control textarea-code" data-type="string" rows="7" placeholder="请输入{{ var_def.description }}..." {% if var_def.required %}required{% endif %}>{{ var_def.default or '' }}</textarea>
+
+                    <!-- 数字类型 -->
+                    {% elif var_def.type.value == "integer" or var_def.type.value == "float" %}
+                    <input type="number" id="var_{{ var_name }}" name="{{ var_name }}" class="form-control" data-type="number" value="{{ var_def.default or '' }}" placeholder="{{ var_def.description }}" {% if var_def.required %}required{% endif %}>
+
+                    <!-- 列表类型 -->
+                    {% elif var_def.type.value == "list" %}
+                    <input type="text" id="var_{{ var_name }}" name="{{ var_name }}" class="form-control" data-type="list" value="{% if var_def.default %}{{ var_def.default|join(', ') }}{% endif %}" placeholder="以英文逗号分隔，如: readability, performance, security" {% if var_def.required %}required{% endif %}>
+
+                    <!-- 普通单行文本 -->
+                    {% else %}
+                    <input type="text" id="var_{{ var_name }}" name="{{ var_name }}" class="form-control" data-type="string" value="{{ var_def.default or '' }}" placeholder="请输入{{ var_def.description }}" {% if var_def.required %}required{% endif %}>
+                    {% endif %}
+
+                    <!-- 附带示例推荐点击填入 -->
+                    {% if var_def.examples and var_def.examples|length > 0 %}
+                    <div class="quick-options-bar">
+                        <span class="quick-label">示例选项 (点击填入):</span>
+                        <div class="quick-chips">
+                            {% for ex in var_def.examples %}
+                            <button type="button" class="btn-quick-chip btn-example-chip" data-target="var_{{ var_name }}" data-value="{{ ex }}">{{ ex }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" id="btnSubmit" class="btn btn-primary btn-block btn-lg">
+                    <span>✨ 立即生成规范提示词</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- 右侧：输出与实时预览 -->
+        <div class="preview-panel">
+            <div class="panel-header preview-header">
+                <div class="tab-group">
+                    <button class="tab-btn active" data-tab="formatted">平台格式化输出</button>
+                    <button class="tab-btn" data-tab="raw">纯文本 (Raw)</button>
+                    <button class="tab-btn" data-tab="json">JSON 报文</button>
+                </div>
+
+                <div class="preview-actions">
+                    <button id="btnCopy" class="btn btn-secondary btn-sm" title="复制到剪贴板">📋 复制</button>
+                    <button id="btnDownload" class="btn btn-secondary btn-sm" title="保存至本地">💾 导出文件</button>
+                </div>
+            </div>
+
+            <!-- 统计指示条 -->
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="label">预估 Tokens:</span>
+                    <strong id="tokenCount" class="text-cyan">-</strong>
+                </div>
+                <div class="status-item">
+                    <span class="label">校验状态:</span>
+                    <span id="validationBadge" class="badge badge-success">准备就绪</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">当前输出平台:</span>
+                    <strong id="currentPlatform" class="text-magenta">OPENAI</strong>
+                </div>
+            </div>
+
+            <div class="preview-content">
+                <div id="tabFormatted" class="tab-pane active">
+                    <pre><code id="outputFormatted" class="code-block">点击左侧 “立即生成规范提示词” 或上方实战预设进行一键生成...</code></pre>
+                </div>
+                <div id="tabRaw" class="tab-pane">
+                    <pre><code id="outputRaw" class="code-block"></code></pre>
+                </div>
+                <div id="tabJson" class="tab-pane">
+                    <pre><code id="outputJson" class="code-block"></code></pre>
+                </div>
+            </div>
+
+            <div id="warningContainer" class="warnings-box" style="display: none;">
+                <h4>⚠️ 校验提示 / 建议</h4>
+                <ul id="warningsList"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

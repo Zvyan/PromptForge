@@ -1,0 +1,79 @@
+meta:
+  name: "api_doc"
+  display_name: "API 文档"
+  category: "writing"
+  description: "生成标准 API 接口文档"
+  tags: ["api", "swagger", "openapi"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "markdown"]
+
+variables:
+  api_type:
+    type: enum
+    required: true
+    options: ["REST", "GraphQL", "gRPC"]
+    description: "API 类型"
+  language:
+    type: string
+    required: true
+    description: "编程语言/框架"
+  code_content:
+    type: string
+    required: true
+    description: "接口源代码"
+  include_examples:
+    type: boolean
+    required: true
+    default: true
+    description: "是否包含请求/响应示例"
+
+
+presets:
+- id: openapi_payment_webhook
+  title: 开放平台聚合支付 Webhook 回调文档
+  description: 包含重试策略、签名计算方法与全状态字段定义
+  variables:
+    api_type: REST
+    language: TypeScript
+    code_content: 'interface WebhookEvent { id: string; event: ''payment.succeeded''
+      | ''payment.failed'' | ''refund.created''; data: { order_id: string; amount:
+      number; currency: string; sign: string }; timestamp: number; }'
+    include_examples: true
+- id: grpc_auth_service_doc
+  title: 用户中心核心 gRPC 接口契约说明书
+  description: 生成清晰详尽的 Protocol Buffers 字段与错误码释义文档
+  variables:
+    api_type: gRPC
+    language: Go
+    code_content: service AuthService { rpc VerifyToken (TokenRequest) returns (UserClaims);
+      rpc RefreshToken (RefreshRequest) returns (TokenResponse); }
+    include_examples: true
+
+sections:
+  system:
+    role: |
+      你是一个专业的后端开发工程师和文档维护者。
+    instructions: |
+      从提供的 {{ language }} 源代码中提取并生成高质量的 {{ api_type }} API 文档。
+      
+      {% if api_type == 'REST' %}
+      请包含 Endpoint、Method、Headers、Query Parameters、Body Parameters 及 HTTP 状态码说明。
+      {% elif api_type == 'GraphQL' %}
+      请包含 Query/Mutation 定义、Arguments、返回字段说明。
+      {% elif api_type == 'gRPC' %}
+      请包含 Service 定义、RPC 方法、Message 结构说明。
+      {% endif %}
+    output_format: |
+      使用清晰的 Markdown 表格或列表格式展示参数。
+      {% if include_examples %}
+      对于每个接口，必须提供基于 cURL 或常用工具的请求示例，以及 JSON 响应示例。
+      {% endif %}
+    constraints: |
+      - 准确推断字段的类型和必填项。
+      - 提取代码中的注释作为接口说明。
+  user: |
+    接口代码：
+    
+    ```{{ language }}
+    {{ code_content }}
+    ```

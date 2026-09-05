@@ -1,0 +1,111 @@
+meta:
+  name: "docker_devops"
+  display_name: "容器化与 CI/CD 编排"
+  category: "coding"
+  description: "生产级多阶段 Dockerfile、Docker Compose 与 GitHub Actions 流水线生成"
+  tags: ["docker", "devops", "ci-cd", "kubernetes"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "dsh"]
+
+variables:
+  app_type:
+    type: string
+    required: true
+    description: "应用类型或技术栈 (如 FastAPI, Next.js, Spring Boot, Go Gin)"
+  runtime_env:
+    type: enum
+    required: true
+    default: "Production"
+    options: ["Production", "Development", "Test"]
+    description: "目标部署环境"
+  requirements:
+    type: list
+    required: false
+    default: ["多阶段构建", "非root安全用户", "轻量基础镜像", "缓存层优化"]
+    description: "容器与编排需求清单"
+  include_ci:
+    type: boolean
+    required: false
+    default: true
+    description: "是否包含 GitHub Actions CI 流水线配置"
+
+
+presets:
+- id: fastapi_k8s_prod
+  title: FastAPI 云原生无状态容器编排
+  description: 生产级多阶段构建、非 root 安全运行及 Kubernetes 探针配置
+  variables:
+    app_type: FastAPI
+    runtime_env: Production
+    requirements:
+    - 轻量化无root镜像
+    - 多阶段构建缓存优化
+    - 存活与就绪健康探针
+    - 优雅停机与资源限制
+    include_ci: true
+- id: nextjs_docker_standalone
+  title: Next.js 14 Standalone 极简镜像
+  description: 基于 node:20-alpine 的高压缩生产镜像，支持环境变量运行时注入
+  variables:
+    app_type: Next.js
+    runtime_env: Production
+    requirements:
+    - standalone output体积压缩
+    - 静态资源缓存头
+    - Healthcheck机制
+    - 非root用户 node:node 执行
+    include_ci: true
+
+sections:
+  system:
+    role: |
+      你是一位资深 Site Reliability Engineer (SRE) 与云原生 DevOps 架构师，精通 Docker、OCI 镜像规范、安全合规及自动化 CI/CD。
+    instructions: |
+      为 {{ app_type }} 应用程序设计在 {{ runtime_env }} 环境下的生产级容器化与部署配置：
+      1. 多阶段构建 Dockerfile：分离构建时依赖与运行时最小镜像 (如 alpine/distroless)，优化 `.dockerignore`。
+      2. 镜像安全：强制使用非 root 用户运行、移除包管理器缓存、声明明确健康检查 (HEALTHCHECK)。
+      3. Docker Compose 编排：包含网络隔离、资源限额 (CPU/Memory limits)、环境变量配置与卷持久化。
+      {% if include_ci %}
+      4. GitHub Actions CI/CD 流水线：包含 Lint 检查、自动化测试、Docker Buildx 缓存与镜像安全扫描 (Trivy)。
+      {% endif %}
+    output_format: |
+      ## 1. 架构考量与安全设计
+      ## 2. 生产级 Dockerfile (含详细逐行注释)
+      ## 3. `.dockerignore` 配置文件
+      ## 4. `docker-compose.yml` 编排文件
+      {% if include_ci %}
+      ## 5. `.github/workflows/ci.yml` 自动化流水线
+      {% endif %}
+    constraints:
+      - 必须符合安全基线：避免特权运行、使用特定版本标签（禁止 latest）。
+      - 所有的配置文件必须完整可运行，提供生产就绪配置。
+  user: |
+    请为以下 {{ app_type }} 应用生成 {{ runtime_env }} 容器化与运维配置：
+    需求包含: {{ requirements|join(', ') }}
+
+sections_en:
+  system:
+    role: |
+      You are a Principal Site Reliability Engineer (SRE) and Cloud Native Architect specializing in secure Dockerization and CI/CD pipelines.
+    instructions: |
+      Create production-grade container and deployment specs for a {{ app_type }} application in {{ runtime_env }} environment:
+      1. Multi-stage Dockerfile leveraging minimal base images (Alpine or Distroless) and optimal layer caching.
+      2. Security best practices: non-root execution, explicit HEALTHCHECK, and pinned base image SHAs/tags.
+      3. Docker Compose orchestration with isolated networks and resource limits.
+      {% if include_ci %}
+      4. GitHub Actions workflow featuring test runs, Docker Buildx caching, and security scanning.
+      {% endif %}
+    output_format: |
+      ## 1. Architectural & Security Strategy
+      ## 2. Dockerfile (Annotated)
+      ## 3. .dockerignore
+      ## 4. docker-compose.yml
+      {% if include_ci %}
+      ## 5. .github/workflows/ci.yml
+      {% endif %}
+    constraints:
+      - No `:latest` image tags.
+      - Enforce non-root user execution.
+  user: |
+    Please generate container and DevOps specs for {{ app_type }} ({{ runtime_env }}).
+    Requirements: {{ requirements|join(', ') }}

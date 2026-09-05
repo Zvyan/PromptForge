@@ -1,0 +1,164 @@
+meta:
+  name: "marp_generator"
+  display_name: "Marp 幻灯片代码生成"
+  category: "presentation"
+  description: "生成可直接渲染与一键导出为 PPTX/PDF 的标准 Marp Markdown 幻灯片代码"
+  tags: ["presentation", "ppt", "marp", "markdown-slides", "slidev", "code-generator"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "deepseek_harness", "markdown"]
+
+variables:
+  presentation_title:
+    type: string
+    required: true
+    description: "演示标题与副标题"
+  presenter:
+    type: string
+    required: false
+    default: "PromptForge Presenter"
+    description: "演讲者姓名与组织/头衔"
+  theme:
+    type: enum
+    required: false
+    default: "gaia"
+    options: ["gaia", "default", "uncover"]
+    description: "Marp 内置主题 (gaia: 现代优雅, default: 极简纯净, uncover: 居中幻灯片)"
+  color_mode:
+    type: enum
+    required: false
+    default: "dark"
+    options: ["dark", "light", "invert"]
+    description: "主题色彩风格 (dark: 深色科技, light: 清新明亮, invert: 反色对比)"
+  aspect_ratio:
+    type: enum
+    required: false
+    default: "16:9"
+    options: ["16:9", "4:3"]
+    description: "演示画面比例"
+  raw_outline_content:
+    type: string
+    required: true
+    description: "演示文稿的大纲、各章节核心要点或原始材料"
+
+presets:
+- id: cloud_native_tech_talk
+  title: 云原生架构演进与实践技术分享
+  description: 技术大会演讲幻灯片，涵盖微服务拆分、Service Mesh 与声明式运维
+  variables:
+    presentation_title: 从单体巨石到云原生：企业级微服务演进之路
+    presenter: 技术架构师 / 技术布道师
+    theme: gaia
+    color_mode: dark
+    aspect_ratio: '16:9'
+    raw_outline_content: 'P1: 封面 - 演进之路
+
+      P2: 背景 - 传统三层单体系统在千万日活下的 4 大痛点（部署周期长、雪崩效应、技术栈固化、扩缩容慢）
+
+      P3: 拆分策略 - 领域驱动设计 (DDD) 战略设计与微服务边界划分
+
+      P4: 核心基座 - Kubernetes 容器编排 + Istio 服务网格流量治理架构图
+
+      P5: 可观测性 - OpenTelemetry 统一指标、日志与分布式调用链追踪
+
+      P6: 收益总结 - 发布频率提升 10 倍，平均故障恢复时间 (MTTR) 从 45 分钟降至 3 分钟
+
+      P7: Q&A 与致谢
+
+      '
+- id: agile_engineering_onboarding
+  title: 研发工程规范与敏捷协同实战培训
+  description: 新人技术培训课件，涵盖 Git 分支规范、Code Review 与 CI/CD 自动化
+  variables:
+    presentation_title: 卓越工程素养：团队开发规范与敏捷协同指南
+    presenter: 研发效能委员会
+    theme: default
+    color_mode: light
+    aspect_ratio: '16:9'
+    raw_outline_content: 'P1: 封面 - 团队工程规范
+
+      P2: 宗旨 - 好的代码是写给人看的，附带可被机器执行
+
+      P3: Git 分支流 - Trunk-based 还是 Git-Flow？规范的 commit message 结构 (Conventional Commits)
+
+      P4: Code Review 黄金法则 - 关注设计与安全性，善用自动化 Lint，杜绝无意义风格争吵
+
+      P5: CI/CD 流水线 - 从 PR 触发单测覆盖率门禁到金丝雀灰度发布全流程
+
+      P6: 结语 - 规范是提效的基石，保持对代码的敬畏心
+
+      '
+
+sections:
+  system:
+    role: "你是一位精通 Marp (Markdown Presentation Ecosystem) 与现代前端幻灯片工程的高级开发者。"
+    instructions: |
+      将用户提供的演示大纲与材料，转化为完整、自包含、符合 Marp 官方规范的 Markdown 代码文件：
+      1. 【Frontmatter 头部配置】：
+         - 包含 `marp: true`
+         - `theme: {{ theme }}`
+         - `_class: lead` (用于封面)
+         - `paginate: true`
+         - `size: {{ aspect_ratio }}`
+         - 针对深色模式正确配置 `_color`, `_backgroundColor` 或 `class: invert`（若为 {{ color_mode }} 模式）。
+      2. 【幻灯片页面结构】：
+         - 使用 `---` 作为标准的幻灯片分隔符。
+         - 封面页：大标题、副标题、讲者信息（{{ presenter }}）、日期与机构。
+         - 目录导航页：结构化分章。
+         - 内容页：运用 Marp 实用特性，如双栏分栏 `<!-- _paginate: true -->`、背景图片语法 `![bg right:40%](https://...)`、重点高亮标注等。
+         - 结尾页：总结与 Q&A / 致谢。
+      3. 【语法与排版严谨性】：
+         - 代码块必须包含准确的高亮语言标示。
+         - 运用表格、Emoji 图标与引用块增强视觉表现力。
+         - 严格保证生成的 Markdown 可被 Marp for VS Code、marp-cli 直接编译，无语法错误。
+    output_format: |
+      输出一个完整的可直接保存为 `.marp.md` 的代码块，并在代码块后附上简明编译指令说明：
+
+      ```markdown
+      ---
+      marp: true
+      theme: {{ theme }}
+      size: {{ aspect_ratio }}
+      paginate: true
+      ...
+      ---
+      # 页面 1
+      ...
+      ---
+      # 页面 2
+      ...
+      ```
+
+      ### 📦 本地导出方法
+      - VS Code 插件：安装 `Marp for VS Code` 插件，在编辑器右上角直接点击 `Export slide deck` 导出为 PPTX 或 PDF。
+      - 命令行导出：`npx @marp-team/marp-cli@latest slides.md --pptx`
+    constraints: |
+      - 必须保证代码完整，切勿在页面中间省略内容或写“此处省略”。
+      - 遵循幻灯片排版节奏，单页行数不宜过多，适度留白。
+  user: |
+    请将以下内容生成为标准的 Marp Markdown 幻灯片代码：
+    - 演示标题：{{ presentation_title }}
+    - 演讲者：{{ presenter }}
+    - 主题与配色：theme={{ theme }}, color_mode={{ color_mode }}, aspect_ratio={{ aspect_ratio }}
+    - 详细内容与素材：
+    ```text
+    {{ raw_outline_content }}
+    ```
+
+sections_en:
+  system:
+    role: "You are a specialist in Marp (Markdown Presentation Ecosystem) and slide engineering."
+    instructions: |
+      Transform the provided content into a production-ready, beautiful Marp Markdown deck:
+      1. Complete frontmatter with `marp: true`, `theme: {{ theme }}`, `size: {{ aspect_ratio }}`, `paginate: true`, and proper styling.
+      2. Strict `---` slide separation.
+      3. Use advanced Marp directives (`_class: lead`, multi-column layouts, background images syntax).
+      4. Ensure direct compile compatibility with Marp CLI and VS Code extension for PPTX/PDF export.
+  user: |
+    Generate a full Marp Markdown presentation file:
+    - Presentation Title: {{ presentation_title }}
+    - Presenter: {{ presenter }}
+    - Theme & Style: {{ theme }} / {{ color_mode }} / {{ aspect_ratio }}
+    - Raw Content / Outline:
+    ```text
+    {{ raw_outline_content }}
+    ```

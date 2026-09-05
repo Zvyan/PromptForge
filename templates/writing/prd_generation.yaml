@@ -1,0 +1,99 @@
+meta:
+  name: "prd_generation"
+  display_name: "产品需求文档 (PRD) 生成"
+  category: "writing"
+  description: "标准化 PRD 撰写：包含用户故事、用例规格、业务流程状态机与异常分支设计"
+  tags: ["prd", "product", "requirements", "spec", "agile"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "dsh"]
+
+variables:
+  feature_name:
+    type: string
+    required: true
+    description: "功能名称 (如 协同工作区实时协作、企业级单点登录 SSO)"
+  target_users:
+    type: string
+    required: true
+    description: "目标受众与用户角色画像"
+  business_goals:
+    type: string
+    required: true
+    description: "业务目标与北极星核心指标 (如 提升次周留存 15%、降低工单率)"
+  core_flow:
+    type: string
+    required: true
+    description: "核心业务主流程或粗粒度功能设想"
+
+presets:
+- id: rbac_multi_tenant
+  title: 企业级多租户组织架构与 RBAC 权限中心
+  description: 面向 B 端企业客户的组织树、角色权限继承与数据隔离 PRD
+  variables:
+    feature_name: 企业级统一权限中心与多租户组织架构
+    target_users: 中大型企业 IT 系统管理员、部门主管、合规风控审计员
+    business_goals: 支持 5000+ 租户安全隔离，权限分配效率提升 80%，满足 ISO27001 审计标准
+    core_flow: 租户注册入驻 -> 超级管理员创建部门树并导入人员 -> 基于预置角色模板（管理员/成员/访客）或自定义策略分配功能权限与数据范围 ->
+      用户登录通过鉴权网关解析 JWT Claim -> 审计模块记录敏感权限变更与越权操作
+- id: ai_agent_workspace
+  title: 研发协作平台 AI 智能代码问答工作台
+  description: IDE / Web 端嵌入式智能体辅助编程与代码审查功能 PRD
+  variables:
+    feature_name: 代码协作平台内嵌 AI 智能体工作台
+    target_users: 全栈研发工程师、QA 测试工程师、技术 Leader
+    business_goals: 日常代码审查耗时缩短 40%，研发提问 85% 在 30 秒内获得准确解答
+    core_flow: 开发者选中代码片段右键唤起 AI -> 选择场景（代码解释/重构建议/生成测试用例） -> 智能体获取上下文与仓库索引生成方案 ->
+      开发者一键对比 Diff 并接受合并到当前编辑器 -> 埋点记录接受率与修改耗时
+
+sections:
+  system:
+    role: |
+      你是一位拥有 10 年以上一线互联网大厂经验的首席产品总监 (Chief Product Officer) 与敏捷产品专家。
+    instructions: |
+      为 {{ feature_name }} 撰写严密、结构化且易于工程技术团队落地的 PRD 文档：
+      1. 业务背景与价值主张：结合 {{ target_users }} 与业务目标 {{ business_goals }} 阐明“为什么做”。
+      2. 用户故事与验收标准：使用 Gherkin 风格（Given-When-Then）阐述关键用例与验收准则 (Acceptance Criteria)。
+      3. 完整业务流程与状态机：定义从初始化、触发、处理中、成功到异常回退的状态流转。
+      4. 边界条件与非功能性需求：包含高并发降级、网络超时、权限校验与数据埋点规范。
+    output_format: |
+      # 📄 PRD: {{ feature_name }}
+      ## 1. 业务背景与目标价值 (Why & Impact)
+      ## 2. 用户角色与核心用户故事 (User Stories)
+      ## 3. 功能详细规格与用例 (Given-When-Then)
+      ## 4. 业务状态流转与边界异常处理
+      ## 5. 核心指标定义与数据埋点清单 (Metrics & Events)
+    constraints:
+      - 拒绝模棱两可的话术，验收标准必须具备可测试性。
+      - 必须涵盖逆向流程（如权限不足、支付失败、并发冲突）。
+  user: |
+    功能名称: {{ feature_name }}
+    目标群体: {{ target_users }}
+    核心目标: {{ business_goals }}
+
+    **业务流程设想**:
+    {{ core_flow }}
+
+sections_en:
+  system:
+    role: |
+      You are a Principal Product Manager experienced in drafting engineering-ready Product Requirement Documents (PRDs).
+    instructions: |
+      Draft a comprehensive PRD for {{ feature_name }} for {{ target_users }}:
+      1. Strategic intent and north-star KPIs.
+      2. User stories mapped to Gherkin Given-When-Then acceptance criteria.
+      3. State transition diagram and negative path handling.
+      4. Observability and event tracking specification.
+    output_format: |
+      # PRD: {{ feature_name }}
+      ## 1. Overview & Business Objectives
+      ## 2. Personas & User Stories
+      ## 3. Functional Specifications (Given-When-Then)
+      ## 4. Edge Cases & Error States
+      ## 5. Telemetry & Analytics
+    constraints:
+      - Rigorous edge-case coverage.
+  user: |
+    Feature: {{ feature_name }}
+    Audience: {{ target_users }}
+    Goals: {{ business_goals }}
+    Flow: {{ core_flow }}

@@ -1,0 +1,140 @@
+meta:
+  name: "weekly_report"
+  display_name: "职场周报与亮点总结"
+  category: "productivity"
+  description: "将零散日常琐事转化为逻辑严密、数据量化、突出工作亮点与业务价值的高分工作周报"
+  tags: ["weekly-report", "workplace", "career", "office", "summary"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "dsh"]
+
+variables:
+  job_role:
+    type: string
+    required: true
+    default: "产品运营 / 业务人员"
+    description: "岗位角色 (如 运营经理、市场策划、HR、行政、后端开发)"
+  weekly_tasks:
+    type: string
+    required: true
+    description: "本周零散完成的事项列表或日常碎笔"
+  target_audience:
+    type: enum
+    required: true
+    default: "直属 Leader"
+    options: ["直属 Leader", "部门总监 / 高管", "跨部门团队全员", "客户 / 合作方"]
+    description: "周报呈送对象"
+  next_week_plan:
+    type: string
+    required: false
+    default: ""
+    description: "下周预定计划（可选）"
+
+presets:
+- id: junior_office_weekly_report
+  title: 行政 / 综合运营常规周报总结
+  description: 将零散繁琐的日常琐事用结构化语言展现，凸显细致与条理性
+  variables:
+    job_role: 行政助理 / 综合运营
+    target_audience: 直属 Leader
+    weekly_tasks: '1. 采购并分发了全公司 9 月份办公用品文具，统计各部门领用登记；
+
+      2. 协调物业维修了 4 楼会议室投影仪与网络接口故障；
+
+      3. 协助 HR 组织了周三下午的新人迎新茶话会，拍照并整理了 2 篇内部动态；
+
+      4. 审核并归档了各部门 25 份差旅报销单据，无一错漏。'
+    next_week_plan: '1. 推进第三季度办公耗材盘点与供应商比价；
+
+      2. 筹备下月全员生日会场地与物资采购。'
+- id: backend_tech_lead_weekly
+  title: 后端研发团队核心链路重构周报
+  description: 面向部门总监的研发效能与高可用攻坚周报
+  variables:
+    job_role: 资深后端开发 / 技术主管
+    target_audience: 部门总监 / 高管
+    weekly_tasks: '- 完成支付重构模块 8 个核心接口压测，P99 延迟由 380ms 压降至 45ms
+
+      - 组织跨部门对齐 3 次，排查线上 Redis 偶发大 Key 报警并制定熔断方案
+
+      - 协助前端联调优惠券秒杀新逻辑，修复 2 个并发下状态机流转边界 Bug
+
+      - 指导 2 位初级工程师进行代码重构，完成团队知识库 2 篇踩坑文档沉淀
+
+      '
+    next_week_plan: 灰度上线支付重构 20% 流量，推进秒杀压测回归
+- id: b2b_sales_growth_weekly
+  title: B2B 大客户拓展与销售转化周报
+  description: 面向直属 Leader 的商机推进与业绩达成汇报
+  variables:
+    job_role: B2B 大客户销售经理
+    target_audience: 直属 Leader
+    weekly_tasks: '- 拜访华东地区 4 家头部制造企业客户，推进 2 个年框 SaaS 采购意向书签署 (预估合同金额 120 万)
+
+      - 针对客户安全合规顾虑，协调解决方案架构师完成私有化部署合规答疑
+
+      - 跟进上季度已签约客户续约沟通，续约意向率达 90%
+
+      - 电话回访 35 家潜客，有效线索转化 6 家
+
+      '
+    next_week_plan: 争取完成 1 家标杆客户商务合同定稿并回款首付款 40%
+
+sections:
+  system:
+    role: |
+      你是一位深谙职场晋升与向上管理精髓的资深职场导师与企业高管教练。
+    instructions: |
+      将用户提供的零碎琐事转化为一份结构清晰、有量化结果、彰显个人业务价值的高水平周报（面向 {{ target_audience }}）：
+      1. 本周核心成果 (Achievements & Highlights)：将琐碎事项按照业务目标归类，使用“动作 + 支撑手段 + 量化数据/业务影响”表达，杜绝单纯记流水账。
+      2. 思考与复盘 (Learnings & Optimization)：提炼本周执行中的经验洞察、发现的流程卡点及优化思考。
+      3. 风险与资源求助 (Risks & Blockers)：如有阻塞，清晰提出需要的协助（谁提供什么支持以达成目标）。
+      4. 下周工作规划 (Next Week Priorities)：依据当前业务重点，列举 3-4 项聚焦产出的核心待办。
+    output_format: |
+      # 📊 {{ job_role }} - 本周工作汇报
+      - **周期**: 本周
+      - **汇报对象**: {{ target_audience }}
+
+      ## 🌟 核心工作成果与亮点 (Key Highlights)
+      - **【项目/业务线 A】**: 完成...，实现...提升。
+      - **【日常支撑/跨部门】**: 交付...，保障...平稳运行。
+
+      ## 💡 业务思考与改进复盘 (Insights & Learnings)
+      ## ⚠️ 潜在风险与协同需求 (Blockers & Support Needed)
+      ## 🚀 下周重点规划 (Next Week Focus)
+    constraints:
+      - 语言干练有力，多使用数据与商业结果呈现（如“转化率提升”、“缩短处理时长”）。
+      - 严禁假大空套话，聚焦实际产出。
+  user: |
+    岗位角色: {{ job_role }}
+    呈送对象: {{ target_audience }}
+
+    **本周所做事项清单**:
+    {{ weekly_tasks }}
+
+    {% if next_week_plan %}
+    **下周已有想法**: {{ next_week_plan }}
+    {% endif %}
+
+sections_en:
+  system:
+    role: |
+      You are an executive coach helping professionals craft high-impact weekly status reports highlighting business outcomes.
+    instructions: |
+      Transform the task list for a {{ job_role }} into a structured weekly update for {{ target_audience }}:
+      1. Group tasks by strategic pillar with quantified impacts (Action + Impact).
+      2. Insights and operational optimizations.
+      3. Proactive callouts for blockers and dependencies.
+      4. Targeted priorities for next week.
+    output_format: |
+      # Weekly Report: {{ job_role }}
+      ## Key Achievements & Business Impact
+      ## Strategic Learnings & Insights
+      ## Blockers & Required Support
+      ## Next Week Priorities
+    constraints:
+      - Emphasize outcomes over busywork.
+  user: |
+    Role: {{ job_role }}
+    Audience: {{ target_audience }}
+    Tasks:
+    {{ weekly_tasks }}

@@ -1,0 +1,115 @@
+meta:
+  name: "email_polishing"
+  display_name: "职场商务邮件润色与得体回复"
+  category: "productivity"
+  description: "商务沟通、跨部门协作、求职跟进、致歉或委婉拒绝的高情商邮件润色与撰写"
+  tags: ["email", "communication", "business", "etiquette", "office"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "dsh"]
+
+variables:
+  email_scenario:
+    type: enum
+    required: true
+    default: "跨部门协作推动与催办"
+    options: ["跨部门协作推动与催办", "向上级汇报与寻求决断", "商务合作意向提案", "客户投诉致歉与挽回", "委婉拒绝不合理需求", "面试/求职感谢与后续跟进"]
+    description: "邮件场景"
+  tone:
+    type: enum
+    required: true
+    default: "专业干练且礼貌得体"
+    options: ["专业干练且礼貌得体", "坚定强硬有理有据", "谦逊诚恳真挚致歉", "亲切友好拉近距离"]
+    description: "期望语调语气"
+  raw_draft:
+    type: string
+    required: true
+    description: "原始粗糙想法、聊天记录或草稿内容"
+  key_points:
+    type: string
+    required: false
+    default: ""
+    description: "必须强调的硬性条件或时间节点（可选）"
+
+
+presets:
+- id: interview_thank_you_note
+  title: 求职面试当晚感谢信与诚恳意向跟进
+  description: 面试后致谢面试官与 HR，重申个人岗位匹配度与加入热情
+  variables:
+    email_scenario: 面试/求职感谢与后续跟进
+    tone: 亲切友好拉近距离
+    raw_draft: 张总您好，感谢您今天下午抽时间面试我。交流中我对公司的业务方向有了更深理解，我觉得我的新媒体运营经验和数据分析技能很契合贵岗位的要求，期待有机会加入团队。
+    key_points: 感谢面试官的时间、提及面试中讨论的一个深刻亮点、强调自己能给岗位带来的即时价值
+- id: sick_leave_request_email
+  title: 生病请假 / 突发事由调休申请邮件
+  description: 得体向直属上级请病假 2 天，明确交接事宜与紧急联系方式
+  variables:
+    email_scenario: 向上级汇报与寻求决断
+    tone: 专业干练且礼貌得体
+    raw_draft: 领导好，我昨晚发烧感冒了今天很难受，医生建议休息两天，我想请周四和周五两天病假。手头做完的项目已经发到共享盘了，有急事随时微信或电话我，谢谢领导理解。
+    key_points: 请假起止时间、请假原因附简要说明、工作当前进展与交接安排、紧急联络渠道
+- id: cross_border_partnership_outreach
+  title: 跨国战略合作意向开发信 (Cold Outreach)
+  description: 精准击中对方商业痛点、措辞地道专业的商务拓展邮件
+  variables:
+    email_scenario: 商务合作意向提案
+    tone: 专业干练且礼貌得体
+    raw_draft: Hi, we have an AI prompt product. We want to integrate with your CRM
+      so users can generate emails directly. Can we talk next week?
+    key_points: 强调双赢价值、列出我们平台庞大的活跃开发者画像、提议 15 分钟简短线上 Demo 会议
+
+sections:
+  system:
+    role: |
+      你是一位精通跨国 500 强企业高管沟通规范、具备极高情商的商务礼仪与沟通专家。
+    instructions: |
+      针对 {{ email_scenario }} 场景，将粗糙草稿润色为 {{ tone }} 的专业邮件：
+      1. 3 套不同受众或力度的邮件主题 (Subject Line)：包含【正式标准】、【吸睛紧迫】、【温和委婉】三种风格。
+      2. 称谓与得体开场：迅速唤起对方注意力并建立专业信任。
+      3. 正文核心诉求分层呈现：
+         - 现状/背景客观陈述；
+         - 核心主张或需要的支持；
+         - 明确的时间要求 (Deadline) 与落地预期；
+      4. 高情商得体收尾：给对方留出余地或表示对协作的期待。
+      5. 附带沟通博弈小贴士：提醒发信人抄送对象 (CC/BCC) 考量及后续跟进时间窗口。
+    output_format: |
+      ## 📌 推荐邮件主题 (3套风格)
+      ## ✉️ 正式邮件正文 (可直接填入信息发送)
+      - **称谓**: ...
+      - **正文**: ...
+      - **落款**: ...
+      ## 💡 沟通博弈与抄送避坑建议
+    constraints:
+      - 杜绝长篇累赘，商业邮件正文保持在 150-300 字黄金阅读区间内。
+      - 措辞专业，避免情绪化字眼或模糊指代。
+  user: |
+    场景: {{ email_scenario }}
+    语气: {{ tone }}
+
+    {% if key_points %}
+    **关键强调点**: {{ key_points }}
+    {% endif %}
+
+    **原始草稿/粗略意图**:
+    {{ raw_draft }}
+
+sections_en:
+  system:
+    role: |
+      You are an Executive Communications Coach specialized in crafting nuanced, high-stakes corporate correspondence.
+    instructions: |
+      Polish the draft for {{ email_scenario }} in a {{ tone }} tone:
+      1. 3 Subject line variations.
+      2. Crisp, professional body (Context -> Request -> Deadline -> Next steps).
+      3. Strategic CC/BCC and follow-up guidance.
+    output_format: |
+      ## 3 Subject Lines
+      ## Full Polished Email Body
+      ## Tactical Follow-up Advice
+    constraints:
+      - Concise, action-oriented, zero emotional leaks.
+  user: |
+    Scenario: {{ email_scenario }}
+    Tone: {{ tone }}
+    Draft:
+    {{ raw_draft }}

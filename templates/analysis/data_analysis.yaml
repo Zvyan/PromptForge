@@ -1,0 +1,80 @@
+meta:
+  name: "data_analysis"
+  display_name: "数据分析"
+  category: "analysis"
+  description: "结构化数据分析与洞察提取"
+  tags: ["data", "insights"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "markdown"]
+
+variables:
+  data_description:
+    type: string
+    required: true
+    description: "数据源描述或示例数据"
+  analysis_goal:
+    type: string
+    required: true
+    description: "分析目标"
+  output_type:
+    type: enum
+    required: true
+    options: ["report", "visualization", "insights"]
+    description: "期望输出格式"
+
+
+presets:
+- id: personal_budget_saving_analysis
+  title: 个人每月消费记账账单与节流省钱建议
+  description: 分析餐饮、网购、娱乐等日常支出比例，制定下月合理预算
+  variables:
+    data_description: 最近 3 个月微信与支付宝账单明细汇总（共计 180 笔支出记录，包含日期、分类标签、消费金额与备注）
+    analysis_goal: 梳理出每月开销最大的前三类支出，识别出可以压缩的冲动消费项，提出每月多存 1000 元的实操节流方案。
+    output_type: insights
+- id: class_exam_score_stats
+  title: 班级期末成绩单平均分、及格率与分段统计
+  description: 针对班主任或教师日常需求，快速统计全班各科分数分布与提分建议
+  variables:
+    data_description: 高二一班 45 名学生期末数学与英语成绩（包含学号、姓名、平时成绩、期末卷面成绩、总评成绩）
+    analysis_goal: 统计两门学科的平均分、及格率、优秀率（85分以上）及前后各 15% 学生的成绩差距，并输出适合在家校沟通会上汇报的简要总结。
+    output_type: report
+- id: user_churn_cohort_analysis
+  title: SaaS 用户次月流失队列归因分析
+  description: 通过留存队列模型分析核心功能使用频次与付费转化节点
+  variables:
+    data_description: 最近 6 个月的月度新注册用户数据 (20万行)，包含字段：user_id, signup_date, first_week_active_days,
+      plan_tier, churn_date, feature_usage_matrix
+    analysis_goal: 寻找新用户在第 7-14 天流失的核心拐点特征，计算各付费梯度留存率并提出挽留策略建议
+    output_type: insights
+- id: ad_campaign_roi_eval
+  title: 多渠道广告投放转化与 CPA 收益评估
+  description: 对比短视频、搜索广告、信息流的转化漏斗与获客成本
+  variables:
+    data_description: 各广告投放平台月度日报数据 (投放成本、曝光数、点击率 CTR、注册转化量、首充金额)
+    analysis_goal: 识别低效投放渠道，测算各渠道边际获客成本 (CAC) 与投资回报率 (ROI)，优化预算配置
+    output_type: report
+
+sections:
+  system:
+    role: |
+      你是一位资深数据分析师和业务策略顾问，善于从复杂数据中提取有价值的洞察。
+    instructions: |
+      对用户提供的数据或数据描述进行深度分析，目标是：{{ analysis_goal }}。
+      
+      {% if output_type == 'report' %}
+      提供结构化的分析报告，包含执行摘要、方法论、详细发现和建议。
+      {% elif output_type == 'visualization' %}
+      描述应该使用哪些图表来展示这些数据最佳，并提供图表生成的配置或代码(如 Python matplotlib/seaborn 方案)。
+      {% elif output_type == 'insights' %}
+      提取 3-5 条具有高度商业价值的核心洞察，并附带行动建议。
+      {% endif %}
+    output_format: |
+      根据 {{ output_type }} 的要求输出对应格式的内容。
+    constraints: |
+      - 结论必须由提供的数据支撑，不凭空捏造。
+      - 使用清晰专业的商业和统计学词汇。
+  user: |
+    分析目标：{{ analysis_goal }}
+    
+    数据描述/样本数据：
+    {{ data_description }}

@@ -1,0 +1,73 @@
+meta:
+  name: "documentation"
+  display_name: "文档撰写"
+  category: "writing"
+  description: "撰写各类型技术文档"
+  tags: ["docs", "technical-writing"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "markdown"]
+
+variables:
+  doc_type:
+    type: enum
+    required: true
+    options: ["tutorial", "guide", "reference", "changelog"]
+    description: "文档类型"
+  language:
+    type: string
+    required: true
+    description: "目标语言(中文/English等)"
+  target_audience:
+    type: enum
+    required: true
+    options: ["beginner", "intermediate", "expert", "non-technical"]
+    description: "目标受众"
+  subject:
+    type: string
+    required: true
+    description: "文档主题及核心资料"
+
+
+presets:
+- id: office_shared_printer_guide
+  title: 办公室网络共享打印机连接操作手册
+  description: 面向非技术同事的手把手图文步骤指南，通俗易懂解决打印排队问题
+  variables:
+    doc_type: guide
+    language: 中文
+    target_audience: non-technical
+    subject: 公司 3 楼与 4 楼公共佳能激光打印机 Windows/Mac 一键连接指南
+- id: sdk_quickstart_doc
+  title: 开发者接入 SDK 5分钟极速上手文档
+  description: 包含安装依赖、环境变量配置、首条 API 发起与异常处理示例
+  variables:
+    doc_type: guide
+    language: Python
+    target_audience: intermediate
+    subject: PromptForge 官方 Python 客户端 SDK 安装与第一条提示词渲染调用
+
+sections:
+  system:
+    role: |
+      你是一位专业的技术作家(Technical Writer)，擅长将复杂的技术概念转化为清晰易懂的文档。
+    instructions: |
+      根据提供的主题资料撰写一份专业的 {{ doc_type }}。目标语言是：{{ language }}。
+      
+      目标受众为 {{ target_audience }}，请据此调整文档的语气、深度和术语使用：
+      {% if target_audience == 'beginner' %}
+      使用浅显易懂的语言，避免过多行业黑话，多用类比和示例，详细解释每一步。
+      {% elif target_audience == 'expert' %}
+      直接切入要点，假设读者已具备丰富的背景知识，侧重于底层原理、进阶配置和最佳实践。
+      {% elif target_audience == 'non-technical' %}
+      侧重业务价值、使用场景和最终效果，完全避免代码和复杂的系统架构图。
+      {% else %}
+      平衡深度和广度，提供适度的背景介绍和代码示例。
+      {% endif %}
+    output_format: |
+      输出标准的 Markdown 格式。包含恰当的标题层级、列表和强调语法。
+    constraints: |
+      - 结构必须清晰，逻辑连贯。
+      - 如果包含代码示例，确保语法正确且已包含注释。
+  user: |
+    主题与参考资料：
+    {{ subject }}

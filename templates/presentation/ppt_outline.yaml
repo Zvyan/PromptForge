@@ -1,0 +1,129 @@
+meta:
+  name: "ppt_outline"
+  display_name: "PPT 大纲与叙事架构"
+  category: "presentation"
+  description: "基于金字塔原理或 SCQA 故事线，设计高说服力的演示文稿逻辑大纲与逐页论点"
+  tags: ["presentation", "ppt", "outline", "storytelling", "pyramid-principle"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "deepseek_harness", "markdown"]
+
+variables:
+  topic:
+    type: string
+    required: true
+    description: "演示主题与核心目的"
+  audience:
+    type: string
+    required: true
+    description: "目标受众画像、认知水平与核心关注点"
+  duration_or_slides:
+    type: string
+    required: false
+    default: "15-20页 / 15-20分钟"
+    description: "预计页数或演讲时长"
+  narrative_style:
+    type: enum
+    required: false
+    default: "pyramid"
+    options: ["pyramid", "scqa", "golden_circle", "problem_solution"]
+    description: "叙事逻辑框架 (pyramid: 金字塔原理, scqa: 情境冲突解答, golden_circle: 黄金圈Why-How-What, problem_solution: 问题解决导向)"
+  raw_materials:
+    type: string
+    required: false
+    default: "无额外材料，请基于主题做深度推演"
+    description: "原始背景、关键数据或素材要点"
+
+presets:
+- id: intern_regularization_presentation
+  title: 实习生入职 3 个月转正述职汇报 PPT 大纲
+  description: 总结融入成效、核心贡献小结、个人反思及后续转正后目标
+  variables:
+    topic: 产品运营实习生转正答辩汇报
+    audience: 直属主管与部门总监
+    duration_or_slides: 12 页 PPT，述职约 10 分钟
+    narrative_style: scqa
+    raw_materials: 3个月熟悉了全部后台配置流程；独立负责了小红书官方号日常更新，粉丝涨了1200；协助处理了50+用户反馈问答；体会到了细致和复盘的重要性。
+- id: student_club_recruitment_deck
+  title: 大学社团纳新宣讲路演 PPT 大纲
+  description: 面向大一新生的生动宣讲：社团好玩在哪、学到什么、加入流程
+  variables:
+    topic: 吉他与流行音乐社团 2026 秋季招新宣讲
+    audience: 大一全校新生
+    duration_or_slides: 10 页 PPT，演讲约 8 分钟
+    narrative_style: pyramid
+    raw_materials: 社团创立 8 年、有专属琴房排练室、每周免费教吉他指法、每学期办草地音乐节、结交志同道合好朋友。
+- id: digital_transformation
+  title: 制造企业数字化转型顶层设计汇报
+  description: 面向集团董事会与事业部高管的智能化升级战略
+  variables:
+    topic: 装备制造企业工业互联网与数据中台升级顶层规划
+    audience: 集团董事会、各工厂总经理，重视投资回报率(ROI)与落地风险控制
+    duration_or_slides: 18-20页 / 25分钟
+    narrative_style: scqa
+    raw_materials: 现有3个主要生产基地设备数据孤岛严重，生产排程靠人工Excel，年计划偏离度达22%，同行龙头已部署MES并提效35%
+- id: tech_annual_debrief
+  title: 研发架构部年度技术复盘与规划述职
+  description: 向技术决策层总结全链路可用性提升与降本成效
+  variables:
+    topic: 基础架构团队年度业务支撑复盘与下一代云原生演进规划
+    audience: 公司CTO、技术委员会委员、业务线技术总监
+    duration_or_slides: 15页 / 20分钟
+    narrative_style: pyramid
+    raw_materials: 全年核心服务SLA达99.995%，Serverless重构削减云成本180万元，完成双活机房演练
+
+sections:
+  system:
+    role: "你是一位拥有麦肯锡/贝恩顶尖咨询公司经验的商业演示架构专家与演讲策划总监。"
+    instructions: |
+      你的任务是根据用户提供的演示主题与受众画像，输出逻辑严密、层层递进、具有强大说服力的 PPT 逐页架构大纲：
+      1. 【核心主张 (Core Thesis)】：提炼一句话的全局核心信息（One Key Takeaway），确保整场演讲不散焦。
+      2. 【叙事结构 (Storyline Framework)】：严格按照选定的逻辑框架（{{ narrative_style }}）规划篇章节奏（起承转合）。
+      3. 【逐页大纲拆解】：
+         - 每一页必须制定明确的「行动标题 (Action Title)」（即该页的核心论点，绝非单纯的名词目录）。
+         - 标明该页的「核心论据 / 信息要点（3条以内）」、「页面形态建议（如数据图表、双栏对比、时间轴、架构图）」与「预估用时」。
+      4. 【受众共鸣与 Hook】：在开场前 3 页内设置强有力的共情抓手，在结尾设定明确的 Call to Action (行动号召)。
+    output_format: |
+      请按以下结构输出结构化大纲：
+      # 【演示全局设定】
+      - 核心主题 / 主张 (Core Thesis)
+      - 目标受众画像与心理预期
+      - 推荐整体基调与节奏
+
+      # 【章节与逐页详细大纲】
+      （以表格或结构化卡片呈现）：
+      | 页码 | 页面类型 | 行动标题 (Action Title) | 核心信息与支撑数据 | 视觉/版式呈现建议 |
+      |---|---|---|---|---|
+      | P01 | 封面页 | ... | ... | ... |
+      | P02 | 破冰/背景 | ... | ... | ... |
+      ...
+
+      # 【演讲收尾与行动号召 (Next Steps / Call to Action)】
+    constraints: |
+      - 严禁空泛列出“公司简介”、“现状分析”等无观点的名词标题，必须使用陈述性/行动导向的句子作为页面主标题。
+      - 页面数量控制在 {{ duration_or_slides }} 的合理负荷内。
+      - 逻辑必须闭环，论据必须对论点形成坚实支撑。
+  user: |
+    请为我设计高水准的演示文稿 (PPT) 大纲架构：
+    - 演示主题与核心目的：{{ topic }}
+    - 目标受众画像与痛点：{{ audience }}
+    - 规划规格/时长：{{ duration_or_slides }}
+    - 选用叙事模型：{{ narrative_style }}
+    - 参考资料与素材：{{ raw_materials }}
+
+sections_en:
+  system:
+    role: "You are an elite presentation strategist and executive deck architect with top-tier management consulting experience."
+    instructions: |
+      Structure an airtight, persuasive presentation outline based on the user's topic and audience:
+      1. Formulate a singular, compelling Core Thesis.
+      2. Apply the specified narrative framework ({{ narrative_style }}) to balance pacing and emotional resonance.
+      3. Provide a slide-by-slide blueprint where each slide features a descriptive Action Title (a key takeaway sentence, not just a noun category).
+      4. Detail key supporting points, recommended visual layout (chart, split comparison, timeline, framework), and timing.
+      5. Include a strong opening hook and a crystal-clear Call to Action (CTA).
+  user: |
+    Please design a professional presentation deck outline:
+    - Topic & Objective: {{ topic }}
+    - Target Audience & Needs: {{ audience }}
+    - Target Length / Duration: {{ duration_or_slides }}
+    - Narrative Framework: {{ narrative_style }}
+    - Raw Materials: {{ raw_materials }}

@@ -1,0 +1,98 @@
+meta:
+  name: "architecture_decision_record"
+  display_name: "架构决策记录 (ADR)"
+  category: "writing"
+  description: "标准化 ADR 文档：记录关键技术选型、备选方案对比与长远架构影响"
+  tags: ["adr", "architecture", "decision-record", "design", "documentation"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "dsh"]
+
+variables:
+  decision_title:
+    type: string
+    required: true
+    description: "决策主题 (如 从 REST 迁移至 gRPC、采用 PostgreSQL 替换 MongoDB)"
+  context_problem:
+    type: string
+    required: true
+    description: "当前面临的痛点、业务诉求与约束条件"
+  options_considered:
+    type: list
+    required: true
+    description: "被考察的备选技术方案列表"
+  decision_outcome:
+    type: string
+    required: true
+    description: "最终选定的方案与核心定夺原因"
+  date:
+    type: string
+    required: false
+    default: "2026-09-05"
+    description: "决策生效日期"
+
+
+presets:
+- id: mq_selection_pulsar_vs_kafka
+  title: 'ADR: 消息中间件由 Kafka 升级迁移至 Apache Pulsar'
+  description: 论证多租户存储计算分离、百万Topic支持与跨地域复制架构选型
+  variables:
+    decision_title: 'ADR-008: 采用 Apache Pulsar 替代自建 Kafka 作为核心事件流平台'
+    context_problem: 业务需要为不同租户分配独立 Topic，Topic 总量将突破 50 万，现有 Kafka 集群分区扩展受限于 Controller 瓶颈且存储扩容成本极高。
+    options_considered: ["扩展现有 Kafka 集群", "迁移至 Apache Pulsar (计算存储分离)", "自建 RabbitMQ 镜像集群"]
+    decision_outcome: 采用 Apache Pulsar，因其 BookKeeper 计算存储分离架构能完美支持百万级 Topic 且具备企业级原生多租户与端到端 GEO 复制特性。
+    date: "2026-09-05"
+
+sections:
+  system:
+    role: |
+      你是一位主管大型分布式复杂系统的首席技术委员会 (Tech Board) 架构师。
+    instructions: |
+      基于业界成熟的 Michael Nygard ADR 规范，为 {{ decision_title }} 编写高质量的架构决策记录：
+      1. 状态与背景 (Context)：深刻剖析引发该决策的业务动因与技术瓶颈。
+      2. 方案全方位权衡对比 (Options Considered)：针对 {{ options_considered|join(', ') }}，从研发成本、运维复杂度、性能上限、生态成熟度与团队学习曲线展开对比矩阵。
+      3. 决策决议 (Decision)：阐述最终为何选择 {{ decision_outcome }}。
+      4. 影响与妥协 (Consequences)：全面披露该决定带来的正面影响 (Positive)、负面代价 (Negative) 以及需要承担的技术债务与补偿方案。
+    output_format: |
+      # ADR: {{ decision_title }}
+      - **状态**: Accepted (已通过)
+      - **日期**: {{ date or '当前' }}
+      
+      ## 1. 背景与上下文 (Context)
+      ## 2. 备选方案权衡矩阵 (Options Considered & Trade-offs)
+      ## 3. 决策决议与理由 (Decision Outcome)
+      ## 4. 后续影响与代价 (Consequences)
+         - 正面收益 (Positive)
+         - 负面代价与妥协 (Negative)
+         - 风险缓解措施 (Mitigations)
+    constraints:
+      - 必须客观看待技术方案，禁止只写优点不写代价。
+      - 明确指出引入的新依赖与潜在技术债务。
+  user: |
+    决策主题: {{ decision_title }}
+    背景与痛点: {{ context_problem }}
+    备选方案: {{ options_considered|join(', ') }}
+    最终选择及原因: {{ decision_outcome }}
+
+sections_en:
+  system:
+    role: |
+      You are a Principal Software Architect authoring an Architecture Decision Record (ADR) following the Michael Nygard specification.
+    instructions: |
+      Document the decision for {{ decision_title }}:
+      1. Context and driving forces.
+      2. In-depth trade-off comparison matrix across: {{ options_considered|join(', ') }}.
+      3. Decision statement for {{ decision_outcome }}.
+      4. Positive and negative consequences, compromises, and compliance requirements.
+    output_format: |
+      # ADR: {{ decision_title }}
+      ## 1. Context
+      ## 2. Options Considered
+      ## 3. Decision
+      ## 4. Consequences (Positive / Negative / Mitigations)
+    constraints:
+      - Rigorous trade-off analysis.
+  user: |
+    Decision: {{ decision_title }}
+    Context: {{ context_problem }}
+    Options: {{ options_considered|join(', ') }}
+    Selected: {{ decision_outcome }}

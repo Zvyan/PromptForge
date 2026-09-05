@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PromptForge - 极简高阶 Agent 引擎{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css?v=4.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    {% block head %}{% endblock %}
+</head>
+<body class="theme-dark">
+    <!-- 极简悬浮顶部导航 -->
+    <header class="top-nav">
+        <div class="nav-container">
+            <a href="/" class="brand-logo">
+                <div class="logo-mark"></div>
+                <span class="logo-text">PromptForge</span>
+            </a>
+            
+            <div class="nav-actions">
+                <a href="/#quickstart" class="nav-link">CLI 指南</a>
+                <a href="https://github.com" target="_blank" class="nav-link">GitHub</a>
+                <button id="themeToggle" class="theme-btn" aria-label="切换主题">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" class="icon-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 分类标签栏（全局水平） -->
+    <nav class="category-tabs-container">
+        <div class="category-tabs">
+            <a href="/" class="tab-item {% if not category %}active{% endif %}">概览</a>
+            <a href="/templates/coding" class="tab-item {% if category and category.name == 'coding' %}active{% endif %}">💻 编程开发</a>
+            <a href="/templates/analysis" class="tab-item {% if category and category.name == 'analysis' %}active{% endif %}">📊 数据分析</a>
+            <a href="/templates/writing" class="tab-item {% if category and category.name == 'writing' %}active{% endif %}">📝 写作</a>
+            <a href="/templates/tool_use" class="tab-item {% if category and category.name == 'tool_use' %}active{% endif %}">🛠️ 工具调用</a>
+            <a href="/templates/conversation" class="tab-item {% if category and category.name == 'conversation' %}active{% endif %}">💬 对话控制</a>
+            <a href="/templates/system" class="tab-item {% if category and category.name == 'system' %}active{% endif %}">⚙️ 系统指令</a>
+            <a href="/templates/productivity" class="tab-item {% if category and category.name == 'productivity' %}active{% endif %}">✨ 办公效率</a>
+            <a href="/templates/academic" class="tab-item {% if category and category.name == 'academic' %}active{% endif %}">🎓 学术科研</a>
+            <a href="/templates/presentation" class="tab-item {% if category and category.name == 'presentation' %}active{% endif %}">📽️ 演示汇报</a>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <main class="main-container">
+        <div class="breadcrumb-bar">
+            {% block breadcrumb %}{% endblock %}
+        </div>
+        
+        <div class="content-wrapper">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="minimal-footer">
+        <p>PromptForge Engine v0.1.0 • Designed for Next-Gen Agents</p>
+    </footer>
+
+    <script src="/static/app.js?v=4.0"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

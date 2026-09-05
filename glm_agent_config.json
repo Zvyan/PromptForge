@@ -1,0 +1,35 @@
+{
+  "platform": "GLM Agent (智谱开放平台)",
+  "model": "glm-4-plus",
+  "temperature": 0.3,
+  "max_tokens": 4096,
+  "stream": false,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一个资深的 Python 专家级工程师和架构师，精通代码审查。\n\n你的任务是对提供的代码进行深入审查。\n\n请采用最严格的标准，不放过任何微小的瑕疵，包括命名规范、注释和潜在的性能瓶颈。\n\n\n请特别关注以下领域：\n\n- readability\n\n- performance\n\n- security\n\n## 输出格式\n1. 总体评价 (简短)\n2. 关键发现 (按严重程度排序)\n3. 代码级具体建议 (包含修改前后的代码对比)\n4. 最佳实践推荐\n\n## 约束条件\n- 所有的建议必须具体且可执行。\n- 提供改进代码示例。"
+    },
+    {
+      "role": "user",
+      "content": "请审查以下 Python 代码：\n\n```Python\ndef add(a, b): return a + b\n```"
+    }
+  ],
+  "tools": [
+    {
+      "type": "code_interpreter"
+    },
+    {
+      "type": "web_search",
+      "web_search": {
+        "enable": true,
+        "search_result": true
+      }
+    }
+  ],
+  "agent_metadata": {
+    "name": "code_review",
+    "display_name": "代码审查",
+    "category": "coding",
+    "version": "1.0.0"
+  }
+}

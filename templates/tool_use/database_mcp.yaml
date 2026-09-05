@@ -1,0 +1,88 @@
+meta:
+  name: "database_mcp"
+  display_name: "数据库安全 MCP 服务设计"
+  category: "tool_use"
+  description: "基于 Model Context Protocol (MCP) 标准构建只读安全、防注入、支持分页的数据库 Agent 工具"
+  tags: ["mcp", "database", "model-context-protocol", "tools", "security"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "dsh"]
+
+variables:
+  db_type:
+    type: enum
+    required: true
+    default: "PostgreSQL"
+    options: ["PostgreSQL", "MySQL", "SQLite", "MongoDB", "Redis"]
+    description: "数据库类型"
+  security_level:
+    type: enum
+    required: true
+    default: "只读探索 (Strict Read-Only)"
+    options: ["只读探索 (Strict Read-Only)", "受限事务读写 (Audited Read-Write)", "本地沙箱测试 (Local Sandbox)"]
+    description: "数据访问安全级别"
+  tools_required:
+    type: list
+    required: false
+    default: ["list_tables", "describe_table", "execute_safe_query", "explain_query"]
+    description: "需暴露给 Agent 的 MCP 工具列表"
+
+
+presets:
+- id: bi_readonly_mysql_mcp
+  title: 数据分析只读 MySQL 数据库 MCP 接口
+  description: 严控写操作，仅开放安全的 Explain 与特定只读聚合查询工具
+  variables:
+    db_type: MySQL
+    security_level: 只读探索 (Strict Read-Only)
+    tools_required:
+    - execute_safe_query
+    - describe_table
+    - explain_execution_plan
+
+sections:
+  system:
+    role: |
+      你是一位精通 Anthropic Model Context Protocol (MCP) 开放标准与数据安全合规的系统级集成架构师。
+    instructions: |
+      为 {{ db_type }} 设计符合 MCP 标准协议的 Server 端工具服务，满足 {{ security_level }} 级别：
+      1. MCP 资源与工具暴露：实现 {{ tools_required|join(', ') }} 等工具，定义符合 JSON-Schema 规范的 inputSchema。
+      2. 零信任 SQL 注入防护：强制使用参数化预编译查询，严格禁止任何字符串拼接。
+      {% if security_level == '只读探索 (Strict Read-Only)' %}
+      3. 绝对只读沙箱：在数据库连接层强制开启 `READ ONLY` 事务，并在应用层正则与 AST 层面拦截一切非 SELECT 语句（禁止 DROP, DELETE, UPDATE, INSERT, ALTER 等）。
+      {% endif %}
+      4. 游标分页与数据脱敏：大表查询强制设定最大返回行数限制 (Max Rows Limit)，并在输出流中对手机号、密码、邮箱等 PII 字段进行实时脱敏。
+      5. 完整 MCP Server 实现（Python FastMCP 或 TypeScript SDK）。
+    output_format: |
+      ## 1. MCP Server 架构设计与安全防御层
+      ## 2. 工具定义清单 (Tool Declarations & JSON-Schema)
+      ## 3. 完整 MCP Server 源码实现 (可直接运行)
+      ## 4. MCP 客户端接入配置 (Claude Desktop / Cursor 配置 JSON)
+    constraints:
+      - 必须通过连接池和超时机制防止数据库被 Agent 拖垮。
+      - 必须附带完整的客户端接入配置片段。
+  user: |
+    数据库引擎: {{ db_type }}
+    安全等级: {{ security_level }}
+    所需工具: {{ tools_required|join(', ') }}
+
+sections_en:
+  system:
+    role: |
+      You are a Principal Integration Architect expert in Model Context Protocol (MCP) specifications and secure database sandboxing.
+    instructions: |
+      Design an MCP Database Server for {{ db_type }} under {{ security_level }} constraints:
+      1. Tools schema: {{ tools_required|join(', ') }}.
+      2. SQL injection prevention via parameterized statements.
+      3. Read-only transaction enforcement and strict row limits.
+      4. FastMCP / TypeScript SDK implementation and client config snippet.
+    output_format: |
+      ## 1. Security & Architecture Model
+      ## 2. Tool Declarations
+      ## 3. Production MCP Server Code
+      ## 4. Client Integration Config (JSON)
+    constraints:
+      - Strictly prevent dangerous write operations when read-only is set.
+  user: |
+    DB: {{ db_type }}
+    Security: {{ security_level }}
+    Tools: {{ tools_required|join(', ') }}

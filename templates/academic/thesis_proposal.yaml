@@ -1,0 +1,117 @@
+meta:
+  name: "thesis_proposal"
+  display_name: "课题开题报告与创新点论证"
+  category: "academic"
+  description: "学位论文/科研项目开题规划：背景依据、技术路线图、核心创新点提炼、可行性论证与进度规划"
+  tags: ["proposal", "thesis", "academic", "research", "methodology"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "dsh"]
+
+variables:
+  topic_name:
+    type: string
+    required: true
+    description: "拟定课题/学位论文题目"
+  degree_level:
+    type: enum
+    required: true
+    default: "硕士研究生毕业论文"
+    options: ["本科毕业设计/论文", "硕士研究生毕业论文", "博士研究生开题报告", "国家/省部级科研基金立项申请"]
+    description: "课题立项层次"
+  initial_ideas:
+    type: string
+    required: true
+    description: "初步想法、已有的前置工作或导师提出的方向要求"
+  expected_outcomes:
+    type: string
+    required: false
+    default: "发表高水平期刊论文 1-2 篇，申请发明专利，构建开源实验原型"
+    description: "预期成果指标"
+
+presets:
+- id: undergrad_campus_secondhand_app
+  title: 本科毕业设计开题：校园二手交易小程序
+  description: 贴合普通本科计算机专业毕设要求的可行性分析与技术路线
+  variables:
+    topic_name: 基于微信小程序的校园闲置物品交易平台设计与实现
+    degree_level: 本科毕业设计/论文
+    initial_ideas: 针对高校学生毕业季闲置物品处理难的问题，采用微信小程序前端 + Spring Boot / Python 简易后端，支持校园认证、分类检索、即时留言与线下自提约定。
+    expected_outcomes: 完成前后端系统全套代码实现、数据库建表脚本以及 1.5 万字符合规范的本科毕业论文设计
+- id: embodied_ai_llm
+  title: 具身智能多模态具身导航与操作研究
+  description: 面向博士/硕士研究生的具身智能大模型感知与决策控制开题
+  variables:
+    topic_name: 基于分层大模型协同的具身智能机器人长程语义导航与操作研究
+    degree_level: 硕士研究生毕业论文
+    initial_ideas: 传统强化学习具身导航在开放环境下泛化能力差、长程任务规划容易迷失。想利用多模态大模型作为高层规划大脑(System 2)，结合低层视觉伺服扩散策略(System
+      1)进行实时控制，并在 Habitat-Sim 与真实四足机器人上验证。
+    expected_outcomes: 发表 IEEE RA-L / IROS 会议论文 1 篇，构建开源仿真环境并完成真实物理机器人长程抓取实验
+- id: quantum_error_mitigation
+  title: NISQ 近景量子计算误差抑制与编译优化
+  description: 面向物理与计算机交叉学科的量子软件工程开题
+  variables:
+    topic_name: 面向超导量子处理器的动态脉冲级误差抑制与量子线路优化算法
+    degree_level: 博士研究生开题报告
+    initial_ideas: 当前 NISQ 阶段超导量子芯片受限于退相干时间与串扰噪声，深度量子线路保真度急剧下降。希望在脉冲级别设计自适应无噪声外推与动态解耦序列，结合强化学习优化量子门映射拓扑。
+    expected_outcomes: 发表 Physical Review A / IEEE QCE 顶级论文 2 篇，申请量子编译优化发明专利 2 项
+
+sections:
+  system:
+    role: |
+      你是一位治学严谨、主导过多项重点科研项目评审的学术委员会主席与博士生导师。
+    instructions: |
+      为 {{ degree_level }} 题目“{{ topic_name }}”设计具备高度说服力、逻辑自洽的学术开题报告框架：
+      1. 选题背景与重大研究意义 (Background & Significance)：从国家战略/重大工程需求（现实意义）和学科前沿科学问题（理论意义）双维度阐述“立项必要性”。
+      2. 国内外研究现状与评述 (State of the Art)：总结学术界主流派系演进路径，点出现有技术路线的“临门一脚”缺陷，凸显本课题的切入契机。
+      3. 核心科学问题与 3 大创新点 (Key Scientific Problems & Novelty)：提炼出 1 个主科学问题，并凝练出 2-3 个具备学术深度与原创性的创新点（理论创新、方法创新或架构创新）。
+      4. 技术路线图与研究方案 (Methodology & Roadmap)：使用清晰的分阶段模块规划，阐述数据采集/仿真环境搭建、算法设计、实验对比与工程实现。
+      5. 可行性分析 (Feasibility)：从理论可行性、实验条件、前置储备与风险预案四个角度进行严密论证。
+      6. 进度安排与里程碑规划 (Milestones)。
+    output_format: |
+      # 🎓 课题开题论证方案: {{ topic_name }}
+      - **层次**: {{ degree_level }}
+
+      ## 1. 选题依据与研究意义 (理论价值 + 实用价值)
+      ## 2. 国内外研究现状与现有局限 (Literature Review & Gaps)
+      ## 3. 拟解决的关键科学问题
+      ## 4. 本课题的核心创新点提炼 (Novelty 1, 2, 3)
+      ## 5. 研究内容、技术路线与实验方案 (含技术路线文字拓扑)
+      ## 6. 可行性分析与实验支撑条件
+      ## 7. 研究进度计划与预期标志性成果
+    constraints:
+      - 创新点表述必须专业深刻，坚决杜绝“把A和B简单拼凑”等伪创新。
+      - 技术路线必须具体清晰、环环相扣。
+  user: |
+    课题名称: {{ topic_name }}
+    学历/层次: {{ degree_level }}
+    预期成果: {{ expected_outcomes }}
+
+    **初始研究想法与基础**:
+    {{ initial_ideas }}
+
+sections_en:
+  system:
+    role: |
+      You are the Chair of an Academic Review Committee advising on a {{ degree_level }} research proposal.
+    instructions: |
+      Construct a rigorous proposal for "{{ topic_name }}":
+      1. Theoretical and practical significance.
+      2. Literature critique exposing gaps.
+      3. Formulation of primary scientific problem and 3 distinct novelties.
+      4. Methodological roadmap and feasibility justification.
+      5. Timeline milestones and deliverables.
+    output_format: |
+      # Research Proposal: {{ topic_name }}
+      ## 1. Significance & Background
+      ## 2. State-of-the-art & Research Gaps
+      ## 3. Core Scientific Problem
+      ## 4. Key Novelties
+      ## 5. Technical Roadmap & Methodology
+      ## 6. Feasibility Analysis
+      ## 7. Deliverables & Schedule
+    constraints:
+      - Genuine intellectual novelty over trivial aggregations.
+  user: |
+    Topic: {{ topic_name }}
+    Level: {{ degree_level }}
+    Ideas: {{ initial_ideas }}

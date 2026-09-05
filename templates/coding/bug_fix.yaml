@@ -1,0 +1,105 @@
+meta:
+  name: "bug_fix"
+  display_name: "Bug 修复"
+  category: "coding"
+  description: "系统性 Bug 诊断与修复"
+  tags: ["bug-fix", "debugging"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor"]
+
+variables:
+  language:
+    type: string
+    required: true
+    description: "编程语言"
+  error_message:
+    type: string
+    required: true
+    description: "错误信息/异常堆栈"
+  code_content:
+    type: string
+    required: true
+    description: "相关代码"
+  context:
+    type: string
+    required: false
+    default: "无额外上下文"
+    description: "运行环境或触发条件"
+
+presets:
+- id: js_dom_null_onclick_fix
+  title: JavaScript 按钮点击无效与 getElementById 为 null
+  description: 排查因为 script 标签放置位置过早导致 DOM 元素未渲染的问题
+  variables:
+    language: JavaScript
+    error_message: 'Uncaught TypeError: Cannot read properties of null (reading ''addEventListener'')'
+    code_content: "<script>\n  const btn = document.getElementById('myBtn');\n  btn.addEventListener('click',\
+      \ () => alert('Hello!'));\n</script>\n<button id='myBtn'>点击我</button>"
+    context: 网页初学者编写简单 HTML，打开控制台就红了一片，点击按钮也没弹窗反应。
+- id: python_index_error_fix
+  title: Python 初学者常见的 IndexError 列表越界报错排查
+  description: 手把手解释 off-by-one 偏差与 range 边界取值错误
+  variables:
+    language: Python
+    error_message: 'IndexError: list index out of range at line 4'
+    code_content: "fruits = ['apple', 'banana', 'cherry']\nfor i in range(1, len(fruits)\
+      \ + 1):\n    print(f'Fruit {i}: {fruits[i]}')"
+    context: 刚学 Python 循环，想要把列表里的水果按序号打印出来，一运行就报错了。
+- id: db_deadlock
+  title: 高并发数据库事务死锁排查
+  description: 排查两个并发事务互相等待导致 MySQL 1213 Deadlock found
+  variables:
+    language: Go
+    error_message: 'Error 1213: Deadlock found when trying to get lock; try restarting
+      transaction'
+    context: 生产环境高峰期促销扣减与更新用户积分双向锁等待
+    code_content: 'tx := db.Begin()
+
+      tx.Exec("UPDATE accounts SET balance = balance - 100 WHERE user_id = ?", fromUser)
+
+      tx.Exec("UPDATE accounts SET balance = balance + 100 WHERE user_id = ?", toUser)
+
+      tx.Commit()
+
+      '
+- id: oom_memory_leak
+  title: 微服务容器 OOM 与未释放连接泄漏
+  description: HTTP 客户端响应 Body 未关闭导致文件句柄与内存暴涨
+  variables:
+    language: Go
+    error_message: 'runtime: out of memory / socket: too many open files'
+    context: 定时爬虫每秒发出 200 个并发请求，运行 10 分钟后容器 Crash
+    code_content: "func fetchStatus(url string) int {\n    resp, err := http.Get(url)\n\
+      \    if err != nil {\n        return 500\n    }\n    // 忘记调用 resp.Body.Close()\n\
+      \    return resp.StatusCode\n}\n"
+
+sections:
+  system:
+    role: |
+      你是一位经验丰富的 {{ language }} 调试专家，擅长快速定位和解决复杂的软件故障。
+    instructions: |
+      分析提供的代码、错误信息和上下文，找出导致 bug 的根本原因，并提供修复方案。
+      
+      诊断步骤：
+      1. 分析错误信息和堆栈轨迹。
+      2. 检查代码中的逻辑漏洞、空指针、并发问题或资源泄漏。
+      3. 结合上下文 ({{ context }}) 验证假设。
+    output_format: |
+      1. 问题根因分析：简明扼要地解释为什么会报错。
+      2. 修复代码：给出修改后的完整或局部代码。
+      3. 预防建议：如何避免类似问题再次发生。
+    constraints: |
+      - 修复代码应保持原有的代码风格和结构。
+      - 必须解释为什么修改有效，而不是仅仅给出代码。
+  user: |
+    运行环境/上下文：{{ context }}
+    
+    报错信息：
+    ```
+    {{ error_message }}
+    ```
+    
+    相关代码：
+    ```{{ language }}
+    {{ code_content }}
+    ```

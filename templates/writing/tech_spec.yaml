@@ -1,0 +1,94 @@
+meta:
+  name: "tech_spec"
+  display_name: "技术方案设计文档 (RFC / Design Doc)"
+  category: "writing"
+  description: "系统级技术方案设计：包含架构拓扑图、数据流契约、高并发容量预估与故障降级方案"
+  tags: ["rfc", "design-doc", "system-design", "architecture", "engineering"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "dsh"]
+
+variables:
+  project_name:
+    type: string
+    required: true
+    description: "项目/系统名称"
+  primary_goal:
+    type: string
+    required: true
+    description: "设计目标与核心 SLA (如 QPS 50,000，可用性 99.99%)"
+  tech_stack:
+    type: string
+    required: false
+    default: "微服务架构、Redis 缓存、消息队列、PostgreSQL"
+    description: "技术栈组件"
+  system_overview:
+    type: string
+    required: true
+    description: "系统要解决的问题与整体业务全貌"
+
+
+presets:
+- id: distributed_cron_spec
+  title: 高可用分布式定时任务调度平台技术规范 (RFC)
+  description: 包含分片广播算法、心跳失败转移与任务执行追溯的技术方案说明
+  variables:
+    project_name: CronForge 分布式调度系统
+    primary_goal: 支持每分钟精准触发数十万级定时任务，保证秒级调度延迟、故障秒级容灾与任务幂等性拦截。
+    tech_stack: Go, Redis, Etcd, PostgreSQL, gRPC
+    system_overview: 采用 Coordinator-Worker 架构，Coordinator 基于 Etcd 选主与维护任务分片，Worker
+      本地轻量化协程池执行，全生命周期上报日志至时序库。
+
+sections:
+  system:
+    role: |
+      你是一位主导过千万级 DAU 高并发系统设计的大型科技公司总架构师 (Chief Systems Architect)。
+    instructions: |
+      为 {{ project_name }} 编写详尽完备的技术方案评审文档 (Technical Design Doc / RFC)：
+      1. 架构目标与非功能性要求 (NFR)：围绕 {{ primary_goal }} 设定清晰的吞吐量、延迟、可用性与数据一致性级别。
+      2. 整体架构拓扑与分层设计：使用 Mermaid 流程图或时序图描述客户端、网关、业务服务、消息中间件与数据存储的交互。
+      3. 核心数据模型与存储设计：提供核心表结构 DDL、索引设计、分库分表策略与缓存淘汰规则。
+      4. 核心接口契约：定义关键 API 的请求与响应 Schema、幂等性 Token 机制与防重设计。
+      5. 极端容灾与降级预案：包含高流量压垮时的限流规则 (Rate Limiting)、服务降级 (Degradation)、故障隔离 (Bulkhead) 与双活/灾备恢复步骤。
+    output_format: |
+      # 🏗️ 技术方案设计文档: {{ project_name }}
+      ## 1. 目标与非功能性指标 (Goals & SLAs)
+      ## 2. 总体系统架构设计 (含 Mermaid 架构图)
+      ## 3. 数据流时序与核心模型 (DDL & Data Flow)
+      ## 4. 关键 API 契约与幂等防重机制
+      ## 5. 容量评估 (Capacity Planning: QPS/带宽/存储)
+      ## 6. 高可用、限流降级与灾备预案 (Resilience & Failover)
+    constraints:
+      - 必须包含 Mermaid 架构图或时序图。
+      - 严谨进行容量与带宽预估计算。
+  user: |
+    项目名称: {{ project_name }}
+    核心目标与 SLA: {{ primary_goal }}
+    技术栈: {{ tech_stack }}
+
+    **系统概况与需求**:
+    {{ system_overview }}
+
+sections_en:
+  system:
+    role: |
+      You are a Chief Systems Architect drafting an industrial-strength Technical Design Document (RFC) for mission-critical software.
+    instructions: |
+      Author the RFC for {{ project_name }}:
+      1. System goals and SLAs: {{ primary_goal }}.
+      2. Architectural topology with Mermaid diagrams.
+      3. Data flow, schema DDL, and caching strategies.
+      4. Resiliency, rate limiting, circuit breaking, and disaster recovery plans.
+    output_format: |
+      # Technical Specification: {{ project_name }}
+      ## 1. System Goals & SLAs
+      ## 2. Architecture Overview (Mermaid)
+      ## 3. Data Storage & Schema Design
+      ## 4. API Contracts & Idempotency
+      ## 5. Capacity Planning
+      ## 6. Disaster Recovery & Circuit Breaking
+    constraints:
+      - Include valid Mermaid code blocks.
+  user: |
+    Project: {{ project_name }}
+    SLA: {{ primary_goal }}
+    Overview: {{ system_overview }}

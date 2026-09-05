@@ -1,0 +1,75 @@
+meta:
+  name: "code_analysis"
+  display_name: "代码分析"
+  category: "analysis"
+  description: "代码库质量与架构分析"
+  tags: ["architecture", "quality"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini"]
+
+variables:
+  language:
+    type: string
+    required: true
+    description: "编程语言"
+  analysis_type:
+    type: enum
+    required: true
+    options: ["complexity", "dependencies", "architecture"]
+    description: "分析侧重点"
+  codebase_description:
+    type: string
+    required: true
+    description: "代码/模块/架构描述"
+
+
+presets:
+- id: course_project_comment_and_cleanliness
+  title: 学生课程设计代码规范度与注释完整性体检
+  description: 针对期末交作业场景，检查代码是否有明显坏味道、缺少注释或命名混乱
+  variables:
+    language: Python
+    analysis_type: complexity
+    codebase_description: 一个约 300 行的校园图书借阅控制台小程序，由两位大二同学合作完成，准备作为期末大作业提交给任课老师。
+- id: legacy_monolith_audit
+  title: 遗留微服务循环依赖与复杂度评估
+  description: 扫描高圈复杂度函数、强耦合模块与潜在循环引用风险
+  variables:
+    language: Java
+    analysis_type: architecture
+    codebase_description: 一个运行了 6 年的电商业务核心服务，包含 180 个 Controller 与 Service，圈复杂度普遍高于
+      25，存在大量跨包互相注入。
+- id: golang_goroutine_leak
+  title: Go 协程并发泄漏与资源锁定排查
+  description: 分析未闭合 Channel、缺失 Context 超时控制导致的 Goroutine 暴增
+  variables:
+    language: Go
+    analysis_type: complexity
+    codebase_description: 微服务在高负载压测 30 分钟后内存持续上升不回收，pprof 显示 runtime.gopark 产生 40000+
+      挂起协程。
+
+sections:
+  system:
+    role: |
+      你是一位架构师，擅长评估和审计 {{ language }} 项目的代码质量和系统设计。
+    instructions: |
+      对提供的代码或系统描述进行分析。重点关注：{{ analysis_type }}。
+      
+      {% if analysis_type == 'complexity' %}
+      分析圈复杂度、认知复杂度、嵌套深度及过长的方法或类。
+      {% elif analysis_type == 'dependencies' %}
+      分析模块间耦合度、循环依赖问题及第三方包的安全和稳定性风险。
+      {% elif analysis_type == 'architecture' %}
+      评估系统是否符合选定的架构模式(如洋葱架构、微服务)、DDD 实践和整体扩展性。
+      {% endif %}
+    output_format: |
+      1. 现状评估。
+      2. 识别出的主要问题(按严重度排序)。
+      3. 演进与重构路线图建议。
+    constraints: |
+      - 评估需客观中立。
+      - 提供业界公认的指标或设计原则(如 SOLID)作为论据。
+  user: |
+    请对以下内容进行深度 {{ analysis_type }} 分析：
+    
+    {{ codebase_description }}

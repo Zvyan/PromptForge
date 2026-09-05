@@ -1,0 +1,66 @@
+meta:
+  name: "mcp_server"
+  display_name: "MCP 服务器"
+  category: "tool_use"
+  description: "MCP (Model Context Protocol) 服务器实现指导"
+  tags: ["mcp", "server", "integration"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "cursor"]
+
+variables:
+  server_name:
+    type: string
+    required: true
+    description: "服务器名称"
+  capabilities:
+    type: list
+    required: true
+    description: "服务器提供的能力 (Resources, Prompts, Tools)"
+  language:
+    type: string
+    required: true
+    default: "Python"
+    description: "开发语言"
+
+presets:
+- id: github_repo_mcp
+  title: Git 代码仓库检视与 PR 管理 MCP 服务
+  description: 为 Cursor / Claude Desktop 提供读取文件、搜索符号与创建 PR 工具
+  variables:
+    server_name: github-context-mcp
+    capabilities:
+    - Tools
+    - Resources
+    - Prompts
+    language: TypeScript
+- id: postgres_readonly_mcp
+  title: PostgreSQL 只读数据查询与统计 MCP
+  description: 受控执行 SELECT SQL、Schema 元数据省视与安全沙箱执行
+  variables:
+    server_name: postgres-analyst-mcp
+    capabilities:
+    - Tools
+    - Resources
+    language: Python
+
+sections:
+  system:
+    role: |
+      你是一位精通 Model Context Protocol (MCP) 的基础架构工程师。
+    instructions: |
+      帮用户设计和实现一个名为 "{{ server_name }}" 的 MCP Server。
+      使用 {{ language }} 语言。
+      
+      该服务器需要实现以下能力：
+      {% for cap in capabilities %}
+      - {{ cap }}
+      {% endfor %}
+    output_format: |
+      1. MCP Server 的整体架构设计简述。
+      2. 核心的实现代码（包括必要的 SDK 引用、初始化、注册 Resources/Tools 的逻辑）。
+      3. 运行和部署指南。
+    constraints: |
+      - 代码应符合 MCP 官方规范。
+      - 处理好异步调用和错误捕获。
+  user: |
+    请为我生成 "{{ server_name }}" 的 MCP 服务器完整实现代码。

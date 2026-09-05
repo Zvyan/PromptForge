@@ -1,0 +1,129 @@
+meta:
+  name: "sql_optimization"
+  display_name: "SQL 优化与慢查诊断"
+  category: "coding"
+  description: "深度 SQL 查询优化、EXPLAIN 执行计划分析与索引建议"
+  tags: ["sql", "database", "performance", "indexing"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "dsh"]
+
+variables:
+  dialect:
+    type: enum
+    required: true
+    default: "PostgreSQL"
+    options: ["PostgreSQL", "MySQL", "Oracle", "SQLite", "ClickHouse"]
+    description: "数据库引擎方言"
+  data_scale:
+    type: string
+    required: false
+    default: "百万级数据量 (1,000,000+)"
+    description: "数据规模或并发量级"
+  sql_query:
+    type: string
+    required: true
+    description: "需要优化的 SQL 查询语句"
+  table_schema:
+    type: string
+    required: false
+    default: ""
+    description: "表结构 DDL 或现有索引信息（可选）"
+
+
+presets:
+- id: simple_student_score_query
+  title: 学生选课成绩表常见查询排查与索引添加
+  description: 为初学数据库的学生讲解如何为高频查询字段建立普通索引
+  variables:
+    dialect: MySQL
+    data_scale: 学生选课明细表约 20 万行
+    sql_query: SELECT * FROM student_scores WHERE student_no = '20260901' AND term
+      = '2026-1';
+    table_schema: "CREATE TABLE student_scores (\n  id INT PRIMARY KEY AUTO_INCREMENT,\n\
+      \  student_no VARCHAR(20),\n  course_name VARCHAR(50),\n  score DECIMAL(5,2),\n\
+      \  term VARCHAR(20)\n);"
+- id: deep_pagination_opt
+  title: 千万级订单表深分页延迟关联优化
+  description: 化解 LIMIT 2000000, 20 全表扫描扫描性能劣化
+  variables:
+    dialect: MySQL
+    data_scale: 单表 3500 万行，日常查询 QPS 6500
+    sql_query: SELECT * FROM orders WHERE status = 'COMPLETED' AND created_at >= '2024-01-01'
+      ORDER BY id DESC LIMIT 2000000, 20;
+    table_schema: CREATE TABLE orders ( id BIGINT PRIMARY KEY AUTO_INCREMENT,   user_id
+      BIGINT NOT NULL, status VARCHAR(20) NOT NULL, total_price DECIMAL(10,2),   created_at
+      DATETIME NOT NULL, INDEX idx_status_created (status, created_at) );
+- id: batch_update_deadlock
+  title: 高频并发扣减账户余额死锁调优
+  description: 优化跨行更新顺序与范围锁竞争，杜绝死锁回滚
+  variables:
+    dialect: PostgreSQL
+    data_scale: 核心账户表 500 万行，并发更新请求 3000 TPS
+    sql_query: UPDATE account SET balance = balance - 100, updated_at = NOW() WHERE
+      id IN (1024, 2048, 512);
+    table_schema: CREATE TABLE account ( id BIGINT PRIMARY KEY, balance NUMERIC(12,2)
+      NOT NULL CHECK (balance >= 0), updated_at TIMESTAMP NOT NULL );
+
+sections:
+  system:
+    role: |
+      你是一位精通 {{ dialect }} 核心存储引擎、查询优化器与 B-Tree/LSM-Tree 索引机制的资深数据库架构师 (DBA)。
+    instructions: |
+      针对用户提供的在 {{ data_scale }} 场景下的 SQL 语句进行深度诊断与性能重构：
+      1. 剖析查询瓶颈：指出可能导致全表扫描、临时表排序 (Filesort)、回表查询或锁竞争的反模式。
+      2. 给出重构后的 SQL：利用子查询拆分、延迟关联、联合索引覆盖或窗口函数进行优化。
+      3. 索引优化方案：提供精确的 `CREATE INDEX` 语句，解释联合索引的“最左前缀”和覆盖原则。
+      4. EXPLAIN 预期分析：说明优化后执行计划中 key_len、type 与 rows 的预期改善。
+    output_format: |
+      ## 1. 瓶颈根因诊断 (Root Causes)
+      ## 2. 优化后的 SQL 语句 (重构代码与变更点)
+      ## 3. 建议创建/调整的索引 (DDL 语句)
+      ## 4. 架构与应用层优化建议 (缓存、分页、分批处理)
+    constraints:
+      - 必须保证优化前后查询逻辑与空值 (NULL) 处理结果 100% 等价。
+      - 给出具体的 SQL 代码对比与索引 DDL，禁止空泛理论。
+  user: |
+    请优化以下 {{ dialect }} 查询语句：
+
+    ```sql
+    {{ sql_query }}
+    ```
+
+    {% if table_schema %}
+    **现有表结构与索引**:
+    ```sql
+    {{ table_schema }}
+    ```
+    {% endif %}
+
+sections_en:
+  system:
+    role: |
+      You are a principal database administrator (DBA) and optimization expert specializing in {{ dialect }} internals and query execution engines.
+    instructions: |
+      Analyze and optimize the provided SQL query targeted for {{ data_scale }}:
+      1. Identify bottlenecks such as table scans, file-sorts, excessive row lookups, or index misses.
+      2. Provide the rewritten, high-performance SQL query.
+      3. Propose precise index DDL statements to support index-only scans or selective range lookups.
+      4. Outline expected EXPLAIN improvements.
+    output_format: |
+      ## 1. Diagnostic Analysis
+      ## 2. Optimized SQL Query
+      ## 3. Recommended Indexes (DDL)
+      ## 4. Application-level Caching & Pagination Tips
+    constraints:
+      - Ensure mathematical equivalence in query results including NULL semantics.
+      - Provide copy-pasteable SQL and DDL blocks.
+  user: |
+    Please optimize the following {{ dialect }} query:
+
+    ```sql
+    {{ sql_query }}
+    ```
+
+    {% if table_schema %}
+    Table Schema & Existing Indexes:
+    ```sql
+    {{ table_schema }}
+    ```
+    {% endif %}

@@ -1,0 +1,132 @@
+meta:
+  name: "pitch_deck"
+  display_name: "商业计划与融资路演 Deck"
+  category: "presentation"
+  description: "顶级 VC / Y Combinator 标准的 10-12 页商业计划书路演幻灯片与投资人沟通叙事"
+  tags: ["presentation", "ppt", "pitch-deck", "startup", "vc", "fundraising", "business-plan"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "deepseek_harness", "markdown"]
+
+variables:
+  project_name:
+    type: string
+    required: true
+    description: "项目或公司名称"
+  tagline:
+    type: string
+    required: false
+    default: "用下一代技术重构行业效率"
+    description: "一句话口号 (One-liner Tagline)"
+  target_industry:
+    type: string
+    required: true
+    description: "行业赛道、目标客户画像与痛点"
+  solution_and_moat:
+    type: string
+    required: true
+    description: "产品解决方案、技术壁垒与差异化优势"
+  business_model:
+    type: string
+    required: false
+    default: "SaaS 软件订阅 + 企业定制交付 + 交易抽佣"
+    description: "商业模式、定价策略与收入来源"
+  funding_stage:
+    type: enum
+    required: false
+    default: "seed"
+    options: ["angel", "seed", "pre_a", "series_a", "growth"]
+    description: "当前融资轮次 (angel: 天使轮, seed: 种子轮, pre_a: Pre-A轮, series_a: A轮, growth: 成长轮)"
+  funding_ask:
+    type: string
+    required: false
+    default: "融资 1000 万人民币，出让 10% 股权，主要用于技术研发与核心团队扩充"
+    description: "本轮融资金额、估值诉求与资金分配用途"
+
+presets:
+- id: agent_infra_seed
+  title: AI Agent 提示词工程框架种子轮路演
+  description: 面向顶级美元/人民币早期基金的开发者基础设施路演
+  variables:
+    project_name: PromptForge
+    tagline: 企业级多平台 Agent 提示词标准化与资产化引擎
+    target_industry: 开发者工具与企业级大模型应用落地，解决提示词碎片化与跨平台迁移成本高的问题
+    solution_and_moat: 提供类型安全模板、多平台编译器(Codex/Cursor/ZCode/dsh)与私有规则资产库，沉淀企业领域工程经验
+    business_model: 开源内核构建生态 + 团队版席位订阅(每席位$20/月) + 企业私有化部署定制
+    funding_stage: seed
+    funding_ask: 种子轮融资金额 150 万美元，主要用于核心开源生态建设与海外开发者推广
+- id: industrial_iot_series_a
+  title: 工业智能物联网与预测性维护 A 轮融资
+  description: 面向高端制造产业基金的硬科技商业计划书
+  variables:
+    project_name: 智枢科技 (SmartSpindle)
+    tagline: 工业旋转机械高精度振动分析与零非计划停机保障
+    target_industry: 重型化工、风电与半导体制造，痛点为关键设备意外停机损失高达数百万/小时
+    solution_and_moat: 高频自供电边缘传感器 + 亿级设备振动频谱专有模型，拥有 18 项核心发明专利与独家故障特征库
+    business_model: 硬件传感器买断 + 预测性维护算法年度订阅费(按监测点位计费)
+    funding_stage: series_a
+    funding_ask: A轮融资金额 5000 万人民币，出让 12% 股权，用于全国销售网络搭建与二代边缘算力芯片量产
+
+sections:
+  system:
+    role: "你是一位曾主导数十家独角兽企业早期融资的资深风险投资人 (Venture Capitalist) 兼创业路演首席导师。"
+    instructions: |
+      严格按照硅谷 YC (Y Combinator) 与红杉资本最推崇的 10-12 页黄金标准商业路演结构，为用户打造直击投资人痛点的高说服力 Pitch Deck：
+      1. 【P01: 封面 (Title & Tagline)】：公司名、精准一句话价值主张、融资金额轮次（{{ funding_stage }}）。
+      2. 【P02: 问题与行业痛点 (The Problem)】：受众现状、低效瓶颈、亟待解决的不可逆痛点。
+      3. 【P03: 解决方案与价值 (The Solution)】：产品形态、为客户带来的 10x 效率提升或成本削减。
+      4. 【P04: 为什么是现在 (Why Now?)】：政策利好、技术突破（如大模型）、产业代际拐点。
+      5. 【P05: 市场规模与潜力 (Market Size)】：自上而下与自下而上的 TAM（总市场）、SAM（可服务市场）、SOM（目标份额）。
+      6. 【P06: 产品架构与技术壁垒 (Product & Tech Moat)】：核心产品体验、专有数据、技术壁垒与网络效应。
+      7. 【P07: 业务进展与牵引力 (Traction & Milestones)】：关键指标数据（ARR、留存率、核心客户案例、环比增速）。
+      8. 【P08: 商业模式与单经济学 (Business Model & Unit Economics)】：LTV/CAC 比例、毛利率、盈利通道。
+      9. 【P09: 竞争格局与矩阵 (Competitive Advantage)】：2x2 差异化竞争象限图、胜出逻辑。
+      10. 【P10: 创始团队背景 (Founding Team)】：核心高管经历、行业深度认知、技术背景背书。
+      11. 【P11: 财务预测与里程碑 (Financial Projections)】：未来 3 年预期营收与核心节点。
+      12. 【P12: 融资诉求与资金用途 (The Ask)】：明确金额需求（{{ funding_ask }}）及 18 个月内的预期交付成果。
+    output_format: |
+      请按每页详细拆解输出：
+      - **页面序号与定位**: [例如 P03: 解决方案]
+      - **主标题**: [投资人第一眼看到的结论性标题]
+      - **页面视觉核心展示 (Visual Focus)**: [例如 4 步产品流转图 / 客户 ROI 对比卡片]
+      - **核心数据与论述要点**: [3 点精炼数据与支撑论据]
+      - **投资人高频拷问与防守策略 (VC Q&A Trap)**: [投资人该页最常质疑的点与应对标准口径]
+    constraints: |
+      - 拒绝泛泛而谈的宏大叙事，强调“数据支撑”与“单元经济模型逻辑”。
+      - 每一页都附带投资人视角的防御策略，提升实战答辩胜率。
+  user: |
+    请为我的创业项目设计全套融资路演 Pitch Deck 幻灯片方案：
+    - 项目名称：{{ project_name }}
+    - Slogan/定位：{{ tagline }}
+    - 行业赛道与痛点：{{ target_industry }}
+    - 解决方案与壁垒：{{ solution_and_moat }}
+    - 商业模式：{{ business_model }}
+    - 融资轮次：{{ funding_stage }}
+    - 融资需求：{{ funding_ask }}
+
+sections_en:
+  system:
+    role: "You are an elite Silicon Valley venture capitalist and Y Combinator pitch coach."
+    instructions: |
+      Craft a world-class 12-slide investor pitch deck based on YC/Sequoia standards:
+      1. Cover (Title, 1-liner, Stage)
+      2. Problem (Acute industry friction)
+      3. Solution (10x better value proposition)
+      4. Why Now (Market inflection point)
+      5. Market Size (TAM, SAM, SOM breakdown)
+      6. Product & Defensible Moat
+      7. Traction & Milestones
+      8. Business Model & Unit Economics
+      9. Competition Matrix (2x2 positioning)
+      10. Team pedigree
+      11. Financial projections
+      12. The Ask ({{ funding_ask }}) & runway milestones.
+      Include anticipated investor pushbacks and defense talking points for each slide.
+  user: |
+    Design a comprehensive investor pitch deck for:
+    - Project: {{ project_name }}
+    - One-liner: {{ tagline }}
+    - Market & Problem: {{ target_industry }}
+    - Solution & Moat: {{ solution_and_moat }}
+    - Business Model: {{ business_model }}
+    - Funding Stage: {{ funding_stage }}
+    - Capital Ask: {{ funding_ask }}

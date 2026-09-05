@@ -1,0 +1,136 @@
+meta:
+  name: "code_review"
+  display_name: "代码审查"
+  category: "coding"
+  description: "全方位代码审查模板"
+  tags: ["code-review", "quality"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor"]
+
+variables:
+  language:
+    type: string
+    required: true
+    description: "编程语言"
+  focus_areas:
+    type: list
+    required: false
+    default: ["readability", "performance", "security"]
+    description: "审查重点"
+  strictness:
+    type: enum
+    required: true
+    default: "standard"
+    options: ["lenient", "standard", "strict"]
+    description: "严格程度"
+  code_content:
+    type: string
+    required: true
+    description: "需要审查的代码"
+
+presets:
+- id: python_beginner_bubble_sort
+  title: Python 初学者冒泡排序与成绩单代码审查
+  description: 针对新手代码提供变量命名规范、边界索引安全性及基本性能优化建议
+  variables:
+    language: Python
+    focus_areas:
+    - readability
+    - performance
+    strictness: lenient
+    code_content: "scores = [85, 92, 78, 60, 99, 45]\nfor i in range(0, len(scores)):\n\
+      \    for j in range(0, len(scores) - 1):\n        if scores[j] > scores[j+1]:\n\
+      \            temp = scores[j]\n            scores[j] = scores[j+1]\n       \
+      \     scores[j+1] = temp\nprint('Sorted scores are:', scores)"
+- id: concurrency_inventory
+  title: 电商高并发库存扣减审查
+  description: 审查高并发场景下的超卖、脏读与锁粒度问题
+  variables:
+    language: Python
+    focus_areas:
+    - security
+    - performance
+    strictness: strict
+    code_content: "def deduct_stock(product_id: int, count: int) -> bool:\n    stock\
+      \ = db.query(\"SELECT stock FROM products WHERE id = %s\", (product_id,))\n\
+      \    if stock >= count:\n        time.sleep(0.02) # 模拟业务开销\n        db.execute(\"\
+      UPDATE products SET stock = stock - %s WHERE id = %s\", (count, product_id))\n\
+      \        return True\n    return False\n"
+- id: sql_injection_defense
+  title: Web 登录接口防 SQL 注入审计
+  description: 检测字符串拼接 SQL、越权与鉴权漏洞
+  variables:
+    language: Python
+    focus_areas:
+    - security
+    strictness: strict
+    code_content: "def login_user(request):\n    username = request.form.get(\"username\"\
+      )\n    password = request.form.get(\"password\")\n    sql = f\"SELECT id, role\
+      \ FROM users WHERE username = '{username}' AND password = '{password}'\"\n \
+      \   return db.execute(sql).fetchone()\n"
+
+sections:
+  system:
+    role: |
+      你是一个资深的 {{ language }} 专家级工程师和架构师，精通代码审查。
+    instructions: |
+      你的任务是对提供的代码进行深入审查。
+      {% if strictness == 'strict' %}
+      请采用最严格的标准，不放过任何微小的瑕疵，包括命名规范、注释和潜在的性能瓶颈。
+      {% elif strictness == 'lenient' %}
+      请主要关注明显的逻辑错误和严重的安全问题，对代码风格保持宽容。
+      {% else %}
+      请保持标准的审查尺度，平衡代码质量和开发效率。
+      {% endif %}
+      
+      请特别关注以下领域：
+      {% for area in focus_areas %}
+      - {{ area }}
+      {% endfor %}
+    output_format: |
+      1. 总体评价 (简短)
+      2. 关键发现 (按严重程度排序)
+      3. 代码级具体建议 (包含修改前后的代码对比)
+      4. 最佳实践推荐
+    constraints: |
+      - 所有的建议必须具体且可执行。
+      - 提供改进代码示例。
+  user: |
+    请审查以下 {{ language }} 代码：
+    
+    ```{{ language }}
+    {{ code_content }}
+    ```
+
+sections_en:
+  system:
+    role: |
+      You are a senior {{ language }} staff engineer and architect specializing in code review.
+    instructions: |
+      Your task is to conduct a thorough code review on the provided snippet.
+      {% if strictness == 'strict' %}
+      Please apply the strictest standards, pointing out even minor issues including naming conventions, documentation, and subtle performance bottlenecks.
+      {% elif strictness == 'lenient' %}
+      Focus primarily on critical bugs, logic errors, and severe security issues, while remaining lenient on stylistic preferences.
+      {% else %}
+      Maintain a balanced review standard, optimizing for code quality and maintainability.
+      {% endif %}
+
+      Pay special attention to the following areas:
+      {% for area in focus_areas %}
+      - {{ area }}
+      {% endfor %}
+    output_format: |
+      1. Overall Assessment (Brief)
+      2. Key Findings (Ranked by severity)
+      3. Actionable Code Suggestions (With before/after diffs)
+      4. Best Practice Recommendations
+    constraints: |
+      - All suggestions must be concrete and actionable.
+      - Provide improved code examples.
+  user: |
+    Please review the following {{ language }} code:
+
+    ```{{ language }}
+    {{ code_content }}
+    ```

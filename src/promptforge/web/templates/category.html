@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}PromptForge - {{ category.display_name }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="breadcrumb-sep">/</span>
+<span class="breadcrumb-current">{{ category.display_name }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="category-header-banner">
+    <div class="banner-icon">{{ category.icon }}</div>
+    <div class="banner-text">
+        <h1 class="banner-title">{{ category.display_name }} ({{ category.name }})</h1>
+        <p class="banner-desc">{{ category.description }}</p>
+    </div>
+</div>
+
+<div class="template-list-section">
+    <div class="list-meta-bar">
+        <span>共包含 <strong>{{ templates|length }}</strong> 个精选模板</span>
+    </div>
+
+    <div class="template-cards-grid">
+        {% for tmpl in templates %}
+        <div class="template-card">
+            <div class="tmpl-card-header">
+                <h3 class="tmpl-name">{{ tmpl.display_name }}</h3>
+                <span class="tmpl-id"><code>{{ tmpl.name }}</code></span>
+            </div>
+            <p class="tmpl-desc">{{ tmpl.description }}</p>
+            
+            <div class="tmpl-platforms">
+                <span class="platform-label">适配平台:</span>
+                {% for p in tmpl.platforms %}
+                <span class="badge badge-{{ p }}">{{ p }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="tmpl-tags">
+                {% for tag in tmpl.tags %}
+                <span class="tag-pill">#{{ tag }}</span>
+                {% endfor %}
+            </div>
+
+            {% if tmpl.presets_count and tmpl.presets_count > 0 %}
+            <div class="tmpl-presets-preview">
+                <span class="preset-badge-tag">💡 内置 {{ tmpl.presets_count }} 组实战预设</span>
+                <span class="preset-titles-text">{{ tmpl.preset_titles|join(' · ') }}</span>
+            </div>
+            {% endif %}
+
+            <div class="tmpl-footer">
+                <a href="/template/{{ category.name }}/{{ tmpl.name }}" class="btn btn-primary btn-block">使用该模板 →</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

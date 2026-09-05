@@ -1,0 +1,92 @@
+meta:
+  name: "test_generation"
+  display_name: "测试生成"
+  category: "coding"
+  description: "自动生成单元测试与边界测试"
+  tags: ["testing", "qa"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor"]
+
+variables:
+  language:
+    type: string
+    required: true
+    description: "编程语言"
+  test_framework:
+    type: string
+    required: true
+    description: "测试框架"
+  coverage_target:
+    type: enum
+    required: true
+    options: ["basic", "standard", "exhaustive"]
+    description: "覆盖率目标"
+  code_content:
+    type: string
+    required: true
+    description: "需要测试的代码"
+
+
+presets:
+- id: simple_calculator_unit_test
+  title: 简易计算器加减乘除函数单元测试
+  description: 面向初学者的单元测试编写示例，包含正常用例与被除数为零异常断言
+  variables:
+    language: Python
+    test_framework: pytest
+    coverage_target: basic
+    code_content: "def calculate(a: float, b: float, op: str) -> float:\n    if op\
+      \ == '+': return a + b\n    elif op == '-': return a - b\n    elif op == '*':\
+      \ return a * b\n    elif op == '/':\n        if b == 0: raise ZeroDivisionError('除数不能为零')\n\
+      \        return a / b\n    else: raise ValueError(f'不支持的运算符: {op}')"
+- id: payment_service_boundary_test
+  title: 聚合支付边界与防重单测全覆盖
+  description: 覆盖签名校验、金额溢出、超时重试与重复通知等异常场景
+  variables:
+    language: Python
+    test_framework: pytest
+    coverage_target: exhaustive
+    code_content: 'class PaymentService: def process_charge(self, user_id: str, amount_cents:
+      int, idempotency_key: str) -> dict: if amount_cents <= 0: raise ValueError(''Invalid
+      amount'') if self.redis.get(f''pay:{idempotency_key}''):             return
+      {''status'': ''duplicate'', ''message'': ''Already processed''}         result
+      = self.gateway.charge(user_id, amount_cents) self.redis.setex(f''pay:{idempotency_key}'',
+      86400, ''done'') return result'
+- id: token_bucket_concurrency_test
+  title: 令牌桶限流算法高并发争用测试
+  description: 验证多线程/协程竞争下令牌消耗的原子性与突发容差
+  variables:
+    language: Go
+    test_framework: testing
+    coverage_target: standard
+    code_content: 'type TokenBucket struct { capacity  int64 available int64     lastRefill
+      time.Time mu sync.Mutex }
+
+      func (b *TokenBucket) Allow(n int64) bool { ... }'
+
+sections:
+  system:
+    role: |
+      你是一位严谨的 {{ language }} 测试工程师，精通 {{ test_framework }} 框架，致力于保障软件质量。
+    instructions: |
+      为提供的代码编写高质量的测试用例。
+      
+      {% if coverage_target == 'basic' %}
+      只需提供正常路径(Happy Path)的测试。
+      {% elif coverage_target == 'standard' %}
+      提供正常路径、常见的边界条件和错误处理测试。
+      {% elif coverage_target == 'exhaustive' %}
+      提供极尽详尽的测试，包括所有分支覆盖、极端边界条件、异常抛出、并发安全(如适用)及 Mock 外部依赖。
+      {% endif %}
+    output_format: |
+      1. 测试策略说明 (涵盖了哪些场景)。
+      2. 完整的 {{ test_framework }} 测试代码。
+    constraints: |
+      - 遵循 AAA (Arrange, Act, Assert) 模式组织测试代码。
+      - 测试方法命名应具有描述性，清楚说明测试场景和预期结果。
+  user: |
+    请为以下 {{ language }} 代码生成 {{ test_framework }} 测试用例，目标覆盖率：{{ coverage_target }}。
+    
+    ```{{ language }}
+    {{ code_content }}
+    ```

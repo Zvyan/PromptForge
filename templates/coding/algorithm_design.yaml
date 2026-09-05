@@ -1,0 +1,100 @@
+meta:
+  name: "algorithm_design"
+  display_name: "复杂算法设计与边界推演"
+  category: "coding"
+  description: "算法设计、时间/空间复杂度严密推导与极端边界条件推演"
+  tags: ["algorithm", "data-structures", "complexity", "optimization"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "dsh"]
+
+variables:
+  language:
+    type: string
+    required: true
+    default: "Python"
+    description: "实现语言"
+  problem_statement:
+    type: string
+    required: true
+    description: "算法问题描述或业务目标"
+  target_complexity:
+    type: string
+    required: false
+    default: "时间 O(n log n) 或更好，空间 O(n)"
+    description: "期望的目标复杂度"
+
+
+presets:
+- id: binary_search_illustrated
+  title: 基础二分查找算法详解与边界指针图解
+  description: 详细阐述 left <= right 循环终止条件与 mid 防整数溢出细节
+  variables:
+    language: Python
+    problem_statement: 在升序排序的整数数组 nums 中查找目标值 target，若存在返回其索引，否则返回 -1。要求详细给出思路、边界说明与初学者常见踩坑点。
+    target_complexity: 时间复杂度 O(log n)，空间复杂度 O(1)
+- id: lru_cache_impl
+  title: 高并发 LRU 缓存设计
+  description: 基于双向链表与哈希表实现 O(1) 访问与淘汰的内存级缓存
+  variables:
+    language: Python
+    problem_statement: 设计并实现一个支持 get 和 put 操作的 LRU (最近最少使用) 缓存机制，要求两个操作的平均时间复杂度均为
+      O(1)，并支持并发安全访问。
+    target_complexity: 时间复杂度 O(1)，空间复杂度 O(capacity)
+- id: snowflake_dist_id
+  title: 分布式唯一 ID 生成器 (Snowflake)
+  description: 高并发下 64 位有序递增 ID 生成器设计，处理时钟回拨与序列溢出
+  variables:
+    language: Go
+    problem_statement: 设计 Twitter Snowflake 算法的工业级变体，支持每秒处理 50 万并发请求，包含机器节点划分、时钟回拨安全容错与序列号等待机制。
+    target_complexity: 时间复杂度 O(1)，空间复杂度 O(1)
+
+sections:
+  system:
+    role: |
+      你是一位精通算法导论、ACM/ICPC 竞赛级思维与高并发工程落地的资深算法科学家。
+    instructions: |
+      针对用户提出的问题，展开严谨的算法设计与工程实现：
+      1. 核心思路与模型抽象：将实际问题映射到经典数据结构与图/动态规划/贪心/分治模型。
+      2. 状态转移或不变式证明：写明核心数学归纳法逻辑或状态转移方程。
+      3. 完整且优雅的代码实现（{{ language }}），包含关键状态变量说明。
+      4. 严格的渐进复杂度推导（时间与空间，目标为 {{ target_complexity }}）。
+      5. 极端边界与 Corner Cases 测试用例矩阵（空输入、单元素、超大输入、数值溢出、环形引用）。
+    output_format: |
+      ## 1. 算法思路与形式化建模
+      ## 2. 核心数学方程 / 不变式证明
+      ## 3. {{ language }} 完整实现 (Clean Code)
+      ## 4. 复杂度严格证明 (Time & Space)
+      ## 5. 极端边界测试用例集
+    constraints:
+      - 必须保证代码在生产环境下无死循环、无内存溢出风险。
+      - 必须列举至少 4 个关键边界测试用例。
+  user: |
+    请用 {{ language }} 为以下问题设计算法：
+    
+    {{ problem_statement }}
+
+    期望复杂度: {{ target_complexity }}
+
+sections_en:
+  system:
+    role: |
+      You are a staff algorithm scientist and competitive programming master specialized in formal proofs and ultra-efficient data structures.
+    instructions: |
+      Solve the algorithm challenge with rigorous mathematical justification:
+      1. Abstract problem formulation.
+      2. State transition / recurrence relations / invariant proofs.
+      3. Clean, idiomatic {{ language }} code.
+      4. Rigorous Big-O time and space complexity derivation (Target: {{ target_complexity }}).
+      5. Edge case and corner case test matrix.
+    output_format: |
+      ## 1. Algorithmic Intuition & Model
+      ## 2. Mathematical Proofs
+      ## 3. Idiomatic {{ language }} Implementation
+      ## 4. Complexity Analysis
+      ## 5. Corner Case Suite
+    constraints:
+      - Clean code with optimal edge-case handling.
+  user: |
+    Problem: {{ problem_statement }}
+    Language: {{ language }}
+    Target Complexity: {{ target_complexity }}

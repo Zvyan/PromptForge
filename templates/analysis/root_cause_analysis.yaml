@@ -1,0 +1,121 @@
+meta:
+  name: "root_cause_analysis"
+  display_name: "线上事故复盘与 RCA 根因分析"
+  category: "analysis"
+  description: "系统性 5-Whys 根因排查、调用链路故障定位与长期防范措施制定"
+  tags: ["rca", "incident", "debugging", "postmortem", "sre"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor", "zcode", "dsh"]
+
+variables:
+  incident_title:
+    type: string
+    required: true
+    description: "事故名称或故障现象"
+  impact_level:
+    type: enum
+    required: true
+    default: "P1 (严重业务受损)"
+    options: ["P0 (核心系统全面中断)", "P1 (严重业务受损)", "P2 (部分降级/非核心受阻)", "P3 (轻微偶发抖动)"]
+    description: "故障影响定级"
+  timeline_logs:
+    type: string
+    required: true
+    description: "故障时间线、错误日志、堆栈跟踪或监控指标告警"
+  recovery_action:
+    type: string
+    required: false
+    default: ""
+    description: "当时的临时止血/恢复动作（如回滚、重启、扩容）"
+
+presets:
+- id: kafka_lag_cascade
+  title: Kafka 消费积压引发支付回调超时雪崩
+  description: 第三方支付回调大量并发写入，下游处理慢导致千万级消息堆积与超时
+  variables:
+    incident_title: 核心支付订单结算回调大面积积压与超时
+    impact_level: P0 (核心系统全面中断)
+    recovery_action: 紧急临时动态扩容 Consumer 实例数从 6 个到 24 个，并针对非核心通知做临时降级
+    timeline_logs: '14:02: 营销秒杀活动开启，支付订单回调 TPS 瞬间从 800 飙升至 9200
+
+      14:05: 监控告警：Kafka order-callback-topic lag 超过 150,000 且持续上升
+
+      14:08: 订单服务数据库连接池占用率 100%，大量的 SQL 等待锁释放
+
+      14:12: 出现级联效应，上游结算服务请求超时超过 5000ms，触发熔断，用户端订单状态长时间未变为已支付
+
+      '
+- id: db_pool_starvation
+  title: 数据库连接池枯竭导致网关全局 504 熔断
+  description: 慢查询缺少组合索引锁表，耗尽连接池导致 API 网关整体不可用
+  variables:
+    incident_title: 用户中心高并发慢 SQL 拖垮数据库连接池导致全站 504
+    impact_level: P1 (严重业务受损)
+    recovery_action: KILL 慢查询 PID，临时在网关层对该非核心接口配置限流 200 QPS
+    timeline_logs: '10:15: 运营推送 Push 消息召回用户，瞬间大量调用 /api/v1/user/coupons
+
+      10:17: MySQL CPU 飙升至 98%，SHOW PROCESSLIST 发现多条慢查询未走索引全表扫描
+
+      10:20: HikariCP 抛出 ConnectionTimeoutException: Connection is not available,
+      request timed out after 30000ms
+
+      10:22: Nginx 网关 upstream timed out (110: Connection timed out)，全站返回 504 Gateway
+      Time-out
+
+      '
+
+sections:
+  system:
+    role: |
+      你是一位资深故障排查指挥官 (Incident Commander) 与高可用系统可靠性专家。
+    instructions: |
+      针对本次定级为 {{ impact_level }} 的线上事故展开严谨的根因分析 (RCA)：
+      1. 故障发生机理推演：基于时间线日志与指标，还原故障在分布式链路中的级联传导过程。
+      2. 深入 5-Whys 递进剖析：穿透表象诱因（如配置错误、网络抖动），挖掘架构设计、监控盲区、代码防御与发布流程层面的深层根因。
+      3. 止血动作评估：评价现有恢复措施并指出潜在次生风险。
+      4. Action Items 闭环改进计划：提出 P0/P1 级的短期修补与长期防范整改措施（指定可落地的代码改动、熔断限流配置或监控告警指标）。
+    output_format: |
+      ## 1. 事故概览与影响评估 (Incident Summary)
+      ## 2. 故障时序推演与触发链路 (Timeline & Propagation)
+      ## 3. 深度 5-Whys 根因下钻 (Root Causes)
+      ## 4. 临时止血与恢复策略评价 (Mitigation Assessment)
+      ## 5. 预防再发的根本整改清单 (Action Items: 预防/发现/缓解/流程)
+    constraints:
+      - 遵循“对事不对人 (Blameless)”的 SRE 复盘原则。
+      - 整改措施必须具体明确、具备可验证性与排期建议。
+  user: |
+    事故名称: {{ incident_title }}
+    影响定级: {{ impact_level }}
+
+    {% if recovery_action %}
+    **应急恢复手段**: {{ recovery_action }}
+    {% endif %}
+
+    **监控/日志/时序数据**:
+    ```text
+    {{ timeline_logs }}
+    ```
+
+sections_en:
+  system:
+    role: |
+      You are a veteran Incident Commander and Principal Site Reliability Engineer leading a blameless root cause analysis (RCA).
+    instructions: |
+      Investigate the {{ impact_level }} incident:
+      1. Trace propagation of failure through system dependencies using log timestamps.
+      2. Conduct a deep 5-Whys drill-down separating triggers from systemic vulnerabilities.
+      3. Define actionable, SMART preventative remediation items across code, architecture, and monitoring.
+    output_format: |
+      ## 1. Executive Summary & Impact
+      ## 2. Failure Cascade Timeline
+      ## 3. 5-Whys Root Cause Analysis
+      ## 4. Remediation Action Items (Prevent / Detect / Mitigate)
+    constraints:
+      - Strictly blameless culture.
+      - Action items must have measurable acceptance criteria.
+  user: |
+    Incident: {{ incident_title }} ({{ impact_level }})
+    Logs & Timeline:
+    ```text
+    {{ timeline_logs }}
+    ```

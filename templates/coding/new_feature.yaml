@@ -1,0 +1,117 @@
+meta:
+  name: "new_feature"
+  display_name: "新功能开发"
+  category: "coding"
+  description: "新功能实现与架构设计"
+  tags: ["feature", "development"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "cursor"]
+
+variables:
+  language:
+    type: string
+    required: true
+    description: "编程语言"
+  framework:
+    type: string
+    required: true
+    description: "使用的框架"
+  feature_description:
+    type: string
+    required: true
+    description: "功能描述"
+  requirements:
+    type: list
+    required: true
+    description: "具体需求点"
+  code_style:
+    type: enum
+    required: true
+    options: ["functional", "oop", "procedural"]
+    description: "代码范式"
+
+
+presets:
+- id: simple_login_register_form
+  title: 原生 HTML/CSS/JS 简易用户登录注册表单
+  description: 包含手机号格式正则校验、密码二次确认与清晰的错误提示
+  variables:
+    language: JavaScript
+    framework: 原生 HTML/CSS/JS
+    feature_description: 制作一个居中显示的卡片式登录/注册切换表单，前端校验用户名不为空、密码长度至少 6 位，点击提交后友好弹出校验结果。
+    requirements:
+    - 美观现代的极简居中卡片样式
+    - 纯原生零第三方库依赖
+    - 友好的输入错误红色提示文本
+    code_style: oop
+- id: batch_rename_files_script
+  title: Python 批量重命名文件夹中照片小脚本
+  description: 按拍照日期或指定统一前缀批量修改指定目录下的图片名称
+  variables:
+    language: Python
+    framework: 标准库 (os / pathlib)
+    feature_description: 写一个简短实用的 Python 脚本，扫描指定文件夹下的所有 .jpg 和 .png 照片，按序号统一重命名为 photo_001.jpg,
+      photo_002.jpg，避免覆盖已有文件。
+    requirements:
+    - 代码简洁附带中文注释
+    - 支持自定义目标文件夹路径
+    - 处理文件重名冲突安全检查
+    code_style: procedural
+- id: redis_slide_window_limiter
+  title: Redis 滑动窗口分布式限流中间件
+  description: 基于 Lua 脚本的高性能接口防刷与防重限流器
+  variables:
+    language: Go
+    framework: Gin
+    feature_description: 实现一个通用 API 限流中间件，支持基于客户端 IP 或 Token 的动态滑动窗口计数限流，每秒最大允许 100
+      次请求，超出时返回统一 HTTP 429 格式。
+    requirements:
+    - 采用 Redis Lua 脚本保证原子性
+    - 无侵入 Gin 中间件注册
+    - 支持自定义限流规则动态下发
+    - 提供完整的单元测试与基准性能测试
+    code_style: procedural
+- id: jwt_rbac_permission_guard
+  title: FastAPI 多租户 RBAC 声明式鉴权注解
+  description: 基于 JWT Payload 与角色的无状态接口安全守卫
+  variables:
+    language: Python
+    framework: FastAPI
+    feature_description: 为后台系统实现基于 RBAC 的权限校验依赖注入器，在路由函数上声明 @require_permissions(['user:read',
+      'user:write']) 即可自动验证权限并抛出标准化 403 异常。
+    requirements:
+    - 集成 PyJWT 与加盐哈希算法
+    - 支持角色继承与租户级权限隔离
+    - 契合 OpenAPI/Swagger 文档自动注入 Bearer Token 按钮
+    - 覆盖率>90% 的自动化测试
+    code_style: oop
+
+sections:
+  system:
+    role: |
+      你是一个精通 {{ language }} 和 {{ framework }} 框架的全栈开发工程师。
+    instructions: |
+      请根据需求描述和具体要求，从零开始或者基于给定的上下文实现一个新功能。
+      采用 {{ code_style }} 编程范式。
+      
+      实现过程应考虑：
+      1. 合理的目录结构和模块划分。
+      2. 健壮的错误处理机制。
+      3. 数据校验和安全防护。
+    output_format: |
+      1. 设计思路简述。
+      2. 核心代码实现 (按文件或模块拆分)。
+      3. 依赖及配置说明 (如果需要)。
+    constraints: |
+      - 代码必须是生产可用级别。
+      - 包含必要的类型提示和文档注释。
+      - 必须满足所有列出的具体需求。
+  user: |
+    功能概述：{{ feature_description }}
+    
+    具体需求：
+    {% for req in requirements %}
+    - {{ req }}
+    {% endfor %}
+    
+    请给出基于 {{ language }} + {{ framework }} 的实现。

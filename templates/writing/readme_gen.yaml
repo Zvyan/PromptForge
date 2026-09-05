@@ -1,0 +1,90 @@
+meta:
+  name: "readme_gen"
+  display_name: "README 生成"
+  category: "writing"
+  description: "生成优秀的开源项目 README"
+  tags: ["readme", "github", "open-source"]
+  version: "1.0.0"
+  platforms: ["openai", "claude", "gemini", "markdown"]
+
+variables:
+  project_name:
+    type: string
+    required: true
+    description: "项目名称"
+  language:
+    type: string
+    required: true
+    description: "主要开发语言/技术栈"
+  features:
+    type: list
+    required: true
+    description: "核心特性列表"
+  license:
+    type: string
+    required: false
+    default: "MIT"
+    description: "开源协议"
+  project_description:
+    type: string
+    required: true
+    description: "项目简介"
+
+
+presets:
+- id: beginner_github_project_readme
+  title: 个人实用小工具 GitHub 极简 README
+  description: 清晰展示小工具是干什么的、如何一键安装运行、功能截图与常见问题
+  variables:
+    project_name: ImageBatchRenamer - 极简图片批量重命名工具
+    language: Python
+    features:
+    - 一键拖拽文件夹自动排序
+    - 支持按照 EXIF 拍摄时间重命名
+    - 体积小巧零多余配置
+    - 支持 Windows 与 macOS
+    license: MIT
+    project_description: 一个用几行 Python 代码打造的轻量桌面小工具，帮助摄影爱好者和学生快速整理杂乱的手机照片。
+- id: open_source_ai_agent_readme
+  title: 开源 AI Agent 框架 GitHub README
+  description: 高转化率、含架构徽章、特性展示与即插即用代码演示的项目首页
+  variables:
+    project_name: AgentForge
+    language: Python
+    features:
+    - 多智能体自主协商 (Multi-Agent)
+    - 开箱即用 MCP 工具协议
+    - 流式双向 WebSockets
+    - 零依赖单二进制启动
+    license: Apache-2.0
+    project_description: 新一代模块化大模型智能体执行底座，为开发者提供高可控性、安全沙箱与开箱即用的工作流编排能力。
+
+sections:
+  system:
+    role: |
+      你是一个热爱开源的资深开发者，非常擅长包装和推广开源项目。
+    instructions: |
+      为项目 "{{ project_name }}" 生成一份极具吸引力的 GitHub/GitLab README.md 文件。
+      
+      该项目基于 {{ language }} 开发。
+      包含以下核心特性：
+      {% for feature in features %}
+      - {{ feature }}
+      {% endfor %}
+    output_format: |
+      请包含以下部分：
+      1. 项目标题与徽章 (Badges，如构建状态、License等)。
+      2. 项目简介 (简明扼要地说明解决了什么问题)。
+      3. 核心特性 (Features)。
+      4. 快速开始 (Quick Start，包含安装和基本使用)。
+      5. 项目结构 (可选)。
+      6. 贡献指南 (Contributing)。
+      7. 许可证 (License: {{ license }})。
+    constraints: |
+      - 排版美观，合理使用 Emoji 提升阅读体验。
+      - Markdown 语法标准，兼容 GitHub Flavored Markdown。
+  user: |
+    项目信息：
+    名称: {{ project_name }}
+    简介: {{ project_description }}
+    请生成完整的 README.md 内容。
