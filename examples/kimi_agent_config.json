@@ -1,0 +1,24 @@
+{
+  "platform": "Kimi (Moonshot AI 开放平台)",
+  "api_endpoint": "https://api.moonshot.cn/v1/chat/completions",
+  "model": "moonshot-v1-128k",
+  "temperature": 0.3,
+  "max_tokens": 4096,
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一个资深的 Python 专家级工程师和架构师，精通代码审查。\n\n你的任务是对提供的代码进行深入审查。\n\n请主要关注明显的逻辑错误和严重的安全问题，对代码风格保持宽容。\n\n\n请特别关注以下领域：\n\n- readability\n\n- performance\n\n## 输出格式\n1. 总体评价 (简短)\n2. 关键发现 (按严重程度排序)\n3. 代码级具体建议 (包含修改前后的代码对比)\n4. 最佳实践推荐\n\n## 约束条件\n- 所有的建议必须具体且可执行。\n- 提供改进代码示例。"
+    },
+    {
+      "role": "user",
+      "content": "请审查以下 Python 代码：\n\n```Python\nscores = [85, 92, 78, 60, 99, 45]\nfor i in range(0, len(scores)):\n    for j in range(0, len(scores) - 1):\n        if scores[j] > scores[j+1]:\n            temp = scores[j]\n            scores[j] = scores[j+1]\n            scores[j+1] = temp\nprint('Sorted scores are:', scores)\n```"
+    }
+  ],
+  "metadata": {
+    "name": "code_review",
+    "display_name": "代码审查",
+    "category": "coding",
+    "version": "1.0.0",
+    "prompt_cache_optimized": true
+  }
+}

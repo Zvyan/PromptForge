@@ -12,12 +12,13 @@ from promptforge.adapters import (
     WindsurfAdapter,
     ZCodeAdapter,
     MarkdownAdapter,
+    KimiAdapter,
 )
 
 
 def test_adapter_registry():
     """测试所有平台已全部注册"""
-    expected_platforms = ["openai", "claude", "gemini", "cursor", "windsurf", "zcode", "markdown"]
+    expected_platforms = ["openai", "claude", "gemini", "cursor", "windsurf", "zcode", "kimi", "moonshot", "markdown"]
     for p in expected_platforms:
         assert p in ADAPTER_REGISTRY, f"平台 {p} 未注册在 ADAPTER_REGISTRY 中"
 
@@ -131,3 +132,35 @@ def test_deepseek_harness_adapter(sample_prompt_output, tmp_path):
     prompt_text = adapter.to_deepseek_prompt(sample_prompt_output)
     assert "DeepSeek Agent Specification" in prompt_text
     assert "System Instructions" in prompt_text
+
+
+def test_kimi_adapter(sample_prompt_output, tmp_path):
+    """测试 Kimi (Moonshot AI) 适配器导出与前缀缓存排版"""
+    adapter = KimiAdapter()
+    text = adapter.export(sample_prompt_output)
+    assert "Kimi / Moonshot 智能体提示词" in text
+    assert "角色定位与核心准则" in text
+    assert "Prompt Cache" in text
+    assert "联网检索" in text
+
+    # 测试文件写入 (Markdown)
+    target_file = tmp_path / "kimi_agent.md"
+    adapter.export_to_file(sample_prompt_output, target_file)
+    assert target_file.exists()
+    assert "Kimi / Moonshot" in target_file.read_text(encoding="utf-8")
+
+    # 测试 Moonshot API 报文 (JSON)
+    config_json = adapter.to_kimi_config(sample_prompt_output)
+    config_data = json.loads(config_json)
+    assert config_data["model"] == "moonshot-v1-128k"
+    assert config_data["api_endpoint"] == "https://api.moonshot.cn/v1/chat/completions"
+    assert "messages" in config_data
+    assert len(config_data["messages"]) == 2
+    assert config_data["metadata"]["prompt_cache_optimized"] is True
+
+    # 测试 JSON 文件写入
+    target_json = tmp_path / "kimi_config.json"
+    adapter.export_to_file(sample_prompt_output, target_json)
+    assert target_json.exists()
+    json_data = json.loads(target_json.read_text(encoding="utf-8"))
+    assert json_data["model"] == "moonshot-v1-128k"

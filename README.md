@@ -11,7 +11,7 @@ PromptForge 是一个专为各类 AI Agent 平台量身打造的结构化提示�
 ## 🌟 主要特性
 
 - **九大场景分类**：内置 `coding`（编程开发）、`analysis`（数据与架构分析）、`writing`（工程写作与设计）、`tool_use`（工具调用与智能体）、`conversation`（交互式推理）、`system`（系统规则）、`productivity`（日常与办公）、`academic`（学术与科研）、`presentation`（演示与汇报）共 **56 套工程级专业模板**。
-- **八大平台深度适配**：针对 OpenAI/Codex、Claude、Gemini、Cursor、Windsurf、通用 Markdown、**ZCode (智谱清言 GLM 智能体平台 / CodeGeeX)** 以及 **DeepSeek Harness (dsh / Cordis 微内核架构)** 提供量身定制的格式化与能力配置。
+- **九大平台深度适配**：针对 OpenAI/Codex、Claude、Gemini、Cursor、Windsurf、通用 Markdown、**ZCode (智谱清言 GLM 智能体平台 / CodeGeeX)**、**DeepSeek Harness (dsh / Cordis 微内核架构)** 以及 **Kimi (Moonshot AI / 月之暗面)** 提供量身定制的格式化与能力配置。
 - **双模态操作界面**：
   - **CLI 命令行**：交互式引导输入、一键生成、规则导出、Token 校验与合规性检查。
   - **Web 可视化界面**：基于 FastAPI + 响应式前端，支持分类检索、动态表单、实时 Token 统计、一键复制与文件下载。
@@ -31,6 +31,7 @@ PromptForge 是一个专为各类 AI Agent 平台量身打造的结构化提示�
 | `cursor` | Cursor IDE 智能体 | Markdown (`.cursorrules`) | 平铺角色设定、编码准则与约束，适配 Composer 与 Agent 索引 |
 | `windsurf` | Windsurf 编辑器 | Markdown (`.windsurfrules`) | 适配 Codeium Cascade 记忆引擎 |
 | `zcode` | **智谱 GLM 智能体平台** / CodeGeeX | Markdown / JSON | 智谱清言智能体人设提示词、GLM-4 API 请求体、原生代码解释器与网页检索插件 |
+| `kimi` (`moonshot`) | **Kimi (Moonshot AI / 月之暗面)** | Markdown / JSON | 128k~200k 超长上下文优化、Prompt Caching（前缀缓存友好的静态锚点设计）、Moonshot API 报文兼容、联网检索与长文档解析 |
 | `deepseek_harness` (`dsh`) | **DeepSeek Harness 智能体框架** | YAML / Markdown | 基于 Cordis 微内核架构的智能体预设 (Preset)、V3/R1 人设规则、文件/终端沙箱插件配置 |
 | `markdown` | 通用对话环境 | Markdown | 模块化结构，适合复制到任何 Web 对话界面 |
 

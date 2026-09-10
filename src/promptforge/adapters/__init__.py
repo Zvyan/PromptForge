@@ -8,6 +8,7 @@ from promptforge.adapters.cursor_adapter import CursorAdapter, WindsurfAdapter
 from promptforge.adapters.markdown_adapter import MarkdownAdapter
 from promptforge.adapters.zcode_adapter import ZCodeAdapter
 from promptforge.adapters.deepseek_harness_adapter import DeepSeekHarnessAdapter
+from promptforge.adapters.kimi_adapter import KimiAdapter
 
 # 导出所有的适配器类
 __all__ = [
@@ -20,6 +21,7 @@ __all__ = [
     'MarkdownAdapter',
     'ZCodeAdapter',
     'DeepSeekHarnessAdapter',
+    'KimiAdapter',
     'ADAPTER_REGISTRY'
 ]
 
@@ -32,6 +34,8 @@ ADAPTER_REGISTRY: Dict[str, Type[BaseAdapter]] = {
     'windsurf': WindsurfAdapter,
     'markdown': MarkdownAdapter,
     'zcode': ZCodeAdapter,
+    'kimi': KimiAdapter,
+    'moonshot': KimiAdapter,
     'deepseek_harness': DeepSeekHarnessAdapter,
     'dsh': DeepSeekHarnessAdapter,
     'deepseek': DeepSeekHarnessAdapter,

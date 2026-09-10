@@ -23,8 +23,8 @@ PromptForge is a structured prompt engineering and management framework tailored
 - **118 Ready-to-Use Presets (100% Template Coverage)**:
   - Covers both heavy-duty architectural workflows and beginner-friendly everyday scenarios (e.g., student paper outlines, sick leave emails, Python file batch renamer, common IndexError troubleshooting).
   - Web UI 1-click auto-filling and CLI `--preset <id/index>` instant injection.
-- **Deep Adaptation for 8 Platforms**:
-  - Native formatters and configurations for OpenAI/Codex, Claude, Gemini, Cursor, Windsurf, generic Markdown, **ZCode (Zhipu GLM Agent Platform / CodeGeeX)**, and **DeepSeek Harness (dsh / Cordis microkernel)**.
+- **Deep Adaptation for 9 Platforms**:
+  - Native formatters and configurations for OpenAI/Codex, Claude, Gemini, Cursor, Windsurf, generic Markdown, **ZCode (Zhipu GLM Agent Platform / CodeGeeX)**, **DeepSeek Harness (dsh / Cordis microkernel)**, and **Kimi (Moonshot AI)**.
 - **Dual Interaction Modalities**:
   - **CLI**: Interactive wizard, parameter validation, batch export, token estimation, and compliance checks.
   - **Web UI**: Built on FastAPI + responsive frontend, featuring Vercel/Linear dark/light themes, category filters, quick-select chips, real-time token counter, 1-click clipboard copy, and file downloads.
@@ -44,6 +44,7 @@ PromptForge is a structured prompt engineering and management framework tailored
 | `cursor` | Cursor IDE Agent | Markdown (`.cursorrules`) | Flattened role persona, coding rules, Composer/Agent index optimization |
 | `windsurf` | Windsurf Editor | Markdown (`.windsurfrules`) | Tailored for Codeium Cascade memory engine |
 | `zcode` | **Zhipu GLM Agent Platform** / CodeGeeX | Markdown / JSON | GLM Agent persona prompts, GLM-4 API payloads, code interpreter & web search plugins |
+| `kimi` (`moonshot`) | **Kimi (Moonshot AI)** | Markdown / JSON | 128k~200k long-context optimization, Prompt Caching static anchor structuring, Moonshot API payload compatibility, web search & document QA |
 | `deepseek_harness` (`dsh`) | **DeepSeek Harness Agent Framework** | YAML / Markdown | Cordis microkernel presets, V3/R1 persona rules, sandbox plugin configurations |
 | `markdown` | Generic Chat Environments | Markdown | Modular sections, clean formatting for any web chat UI |
 
